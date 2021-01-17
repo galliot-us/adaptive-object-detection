@@ -1,0 +1,9 @@
+/data
+*.~
+.*.swp
+*.pb
+*.tflite
+*.csv
+*.idea
+venv
+.vscode
