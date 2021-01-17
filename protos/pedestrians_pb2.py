@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='pedestrians.proto',
   package='neuralet_adaptive_learning',
   syntax='proto2',
-  serialized_pb=_b('\n\x11pedestrians.proto\x12\x1aneuralet_adaptive_learning\"O\n\x04\x42\x62ox\x12\x0c\n\x04left\x18\x01 \x01(\x02\x12\x0b\n\x03top\x18\x02 \x01(\x02\x12\r\n\x05right\x18\x03 \x01(\x02\x12\x0e\n\x06\x62ottom\x18\x04 \x01(\x02\x12\r\n\x05score\x18\x05 \x01(\x02\"D\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\t\x12.\n\x04\x62\x62ox\x18\x02 \x01(\x0b\x32 .neuralet_adaptive_learning.Bbox\"p\n\x05\x46rame\x12\x14\n\x0c\x66rame_number\x18\x01 \x01(\x05\x12\r\n\x05width\x18\x02 \x01(\x05\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\x32\n\x06people\x18\x04 \x03(\x0b\x32\".neuralet_adaptive_learning.Person')
+  serialized_pb=_b('\n\x11pedestrians.proto\x12\x1aneuralet_adaptive_learning\"O\n\x04\x42\x62ox\x12\x0c\n\x04left\x18\x01 \x01(\x02\x12\x0b\n\x03top\x18\x02 \x01(\x02\x12\r\n\x05right\x18\x03 \x01(\x02\x12\x0e\n\x06\x62ottom\x18\x04 \x01(\x02\x12\r\n\x05score\x18\x05 \x01(\x02\"D\n\x06Person\x12\n\n\x02id\x18\x01 \x01(\t\x12.\n\x04\x62\x62ox\x18\x02 \x01(\x0b\x32 .neuralet_adaptive_learning.Bbox\"}\n\x05\x46rame\x12\x14\n\x0c\x66rame_number\x18\x01 \x01(\x05\x12\x0b\n\x03\x66ps\x18\x02 \x01(\x05\x12\r\n\x05width\x18\x03 \x01(\x05\x12\x0e\n\x06height\x18\x04 \x01(\x05\x12\x32\n\x06people\x18\x05 \x03(\x0b\x32\".neuralet_adaptive_learning.Person')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -138,22 +138,29 @@ _FRAME = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='width', full_name='neuralet_adaptive_learning.Frame.width', index=1,
+      name='fps', full_name='neuralet_adaptive_learning.Frame.fps', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='height', full_name='neuralet_adaptive_learning.Frame.height', index=2,
+      name='width', full_name='neuralet_adaptive_learning.Frame.width', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='people', full_name='neuralet_adaptive_learning.Frame.people', index=3,
-      number=4, type=11, cpp_type=10, label=3,
+      name='height', full_name='neuralet_adaptive_learning.Frame.height', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='people', full_name='neuralet_adaptive_learning.Frame.people', index=4,
+      number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -171,7 +178,7 @@ _FRAME = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=200,
-  serialized_end=312,
+  serialized_end=325,
 )
 
 _PERSON.fields_by_name['bbox'].message_type = _BBOX

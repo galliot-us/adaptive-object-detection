@@ -18,7 +18,8 @@ message Person {
 
 message Frame {
   optional int32 frame_number = 1;
-  optional int32 width = 2;
-  optional int32 height = 3;
-  repeated Person people = 4;
+  optional int32 fps = 2;
+  optional int32 width = 3;
+  optional int32 height = 4;
+  repeated Person people = 5;
 }
