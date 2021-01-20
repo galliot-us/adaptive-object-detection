@@ -3,12 +3,11 @@ import urllib.request
 from pprint import pprint
 
 
-class Request():
-    def __init__(self, config):
-        self.config = self.config
+class NeuraletRequest():
 
-    def send_config(self):
-        config_json = json.dumps(self.config.get_section_dict('Teacher')).encode('utf-8')
+    @staticmethod
+    def send_config():
+        config_json = json.dumps(config.get_section_dict('Teacher')).encode('utf-8')
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -22,8 +21,16 @@ class Request():
         except Exception as e:
             print(e)
 
-    def get_model(self):
-        url = 'https://httpbin.org/get'
+    @staticmethod
+    def get_model(task_id):
+        url = 'https://httpbin.org/get' + task_id
+        with urllib.request.urlopen(url) as response:
+            html = response.read()
+        pprint(html)
+
+    @staticmethod
+    def get_task_status(task_id):
+        url = 'https://httpbin.org/get' + task_id
         with urllib.request.urlopen(url) as response:
             html = response.read()
         pprint(html)
