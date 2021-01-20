@@ -13,6 +13,7 @@ def init_task(cfg_path):
 
 def get_task_status(task_id):
     req.get_task_status(task_id)
+    # TODO: should return metadata or someting like that
 
 
 def download_model(task_id):
