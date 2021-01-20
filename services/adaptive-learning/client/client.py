@@ -47,7 +47,7 @@ def main():
         print(f"Task type {task_type}: Download the trained model from server.")
         download_model(task_id)
     else:
-        raise ValueError(f"TaskID {task_type}: Is not supported")
+        raise ValueError(f"Task type {task_type}: Is not supported")
 
 
 if __name__ == "__main__":
