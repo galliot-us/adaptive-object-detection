@@ -44,7 +44,7 @@ class NeuraletRequest():
         }
         print("Uploading file, please wait it may take a while ...!")
         r = requests.post(url, headers=headers, files=file)
-        if r.status_code == 200
+        if r.status_code == 200:
             uploaded_file_name = r.json()['filename']
             print(f'The file is uploaded successfully. Uploaded filename = {uploaded_file_name}')
             return uploaded_file_name
