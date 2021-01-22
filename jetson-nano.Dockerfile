@@ -35,8 +35,8 @@ RUN pip3 install wget pillow
 
 COPY ./exporters/libflattenconcat.so.6 /opt/libflattenconcat.so 
 COPY ./exporters/graphsurgeon.patch-4.2.2 /repo 
-COPY install.sh /repo
-RUN chmod +x /repo/install.sh && /repo/install.sh
+COPY install_trtexporter.sh /repo
+RUN chmod +x /repo/install_trtexporter.sh && /repo/install.sh
 
 # The `python3-opencv` package is old and doesn't support gstreamer video writer on Debian. So we need to manually build opencv.
 ARG OPENCV_VERSION=4.3.0
