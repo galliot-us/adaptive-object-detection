@@ -1,4 +1,3 @@
-from configs.config_engine import ConfigEngine
 from neuralet_requests import NeuraletRequest
 from argparse import ArgumentParser
 import os
@@ -7,14 +6,13 @@ req = NeuraletRequest()
 
 
 def init_task(cfg_path):
-    config = ConfigEngine(cfg_path)
-    req.send_config(config)
-    # TODO: should return task_id
+    task_id = req.send_config(cfg_path)
+    return task_id
 
 
 def get_task_status(task_id):
-    req.get_task_status(task_id)
-    # TODO: should return metadata or someting like that
+    out = req.get_task_status(task_id)
+    return out
 
 
 def download_model(task_id):
@@ -24,9 +22,7 @@ def download_model(task_id):
 def upload_file(file_path):
     uploaded_file_name = None
     if os.path.isfile(file_path):
-        file_name = file_path.split('/')[-1]
-        file = (file_name, open(file_path, 'rb'))
-        uploaded_file_name = req.send_file(file, file_name)
+        uploaded_file_name = req.send_file(file_path)
     else:
         raise Exception("Invalid Arguments, expected a file that exists not %r" % (file_path))
     return uploaded_file_name
