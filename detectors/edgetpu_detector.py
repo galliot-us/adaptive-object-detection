@@ -14,6 +14,13 @@ from tflite_runtime.interpreter import Interpreter
 class EdgeTpuDetector(BaseDetector):
 
     def load_model(self, model_path=None):
+        """
+        Loads model with specified model_path, if no model_path provided, the COCO model will be downloaded
+        and saved under 'detectors/data/'.
+        Args:
+            model_path: path to the edge tpu tflite model.
+        """
+
         if not model_path:
             logging.info("you didn't specify the model file so the COCO pretrained model will be used")
             base_url = 'https://media.githubusercontent.com/media/neuralet/neuralet-models/master/edge-tpu/mobilenet_ssd_v2/'
@@ -31,11 +38,28 @@ class EdgeTpuDetector(BaseDetector):
         self.output_details = self.model.get_output_details()
 
     def preprocess(self, raw_image):
+    """
+    preprocess function prepares the raw input for inference.
+    Args:
+        raw_image: A BGR numpy array with shape (img_height, img_width, channels)
+    Returns:
+        rgb_resized_image: A numpy array which contains preprocessed verison of input
+    """
+
         resized_image = cv.resize(raw_image, (self.width, self.height))
         rgb_resized_image = cv.cvtColor(resized_image, cv.COLOR_BGR2RGB)
         return rgb_resized_image
 
     def inference(self, preprocessed_image):
+        """
+        Inference function sets input tensor to input image and gets the output.
+        The interpreter instance provides corresponding detection output which is used for creating result
+        Args:
+            resized_rgb_image: uint8 numpy array with shape (img_height, img_width, channels)
+        Returns:
+            result: A Frame protobuf massages
+        """
+
         if not self.model:
             raise RuntimeError("first load the model with 'load_model()' method then call inferece()")
         input_image = np.expand_dims(preprocessed_image, axis=0)

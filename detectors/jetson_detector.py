@@ -15,9 +15,6 @@ from utils.fps_calculator import convert_infr_time_to_fps
 class JetsonDetector(BaseDetector):
     """
     Perform object detection with the given prebuilt tensorrt engine.
-
-    :param config: Is a ConfigEngine instance which provides necessary parameters.
-    :param output_layout:
     """
 
     def _load_plugins(self):
@@ -78,7 +75,13 @@ class JetsonDetector(BaseDetector):
 
 
     def load_model(self, model_path=None):
-        """ Initialize TensorRT plugins, engine and context. """ 
+        """ 
+        Initialize TensorRT plugins, engine and context with given tensorrt engine file, if no file provided the default
+        COCO model will be downloaded under 'detectors/data'.
+        Args:
+            model_path: Path to the tensorrt engine.
+        """
+ 
         self.trt_logger = trt.Logger(trt.Logger.INFO)
         self._load_plugins()
 
@@ -123,6 +126,14 @@ class JetsonDetector(BaseDetector):
         img = (2.0 / 255.0) * img - 1.0
         return img
     def preprocess(self, raw_image):
+        """
+        preprocess function prepares the raw input for inference.
+        Args:
+            raw_image: A BGR numpy array with shape (img_height, img_width, channels)
+        Returns:
+            rgb_resized_image: A numpy array which contains preprocessed verison of input
+        """
+
         resized_image = cv.resize(raw_image, (self.width, self.height))
         rgb_resized_image = cv.cvtColor(resized_image, cv.COLOR_BGR2RGB)
         rgb_resized_image = self._preprocess_trt(rgb_resized_image)
@@ -149,13 +160,11 @@ class JetsonDetector(BaseDetector):
     def inference(self, preprocessed_image):
         """
         Detect objects in the input image.
-
         Args:
-            img: uint8 numpy array with shape (img_height, img_width, channels)
-
+            resized_rgb_image: uint8 numpy array with shape (img_height, img_width, channels)
         Returns:
-            result: a dictionary contains of [{"id": 0, "bbox": [x1, y1, x2, y2], "score": s% }, {...}, {...}, ...]
-        """
+            result: A Frame protobuf massages
+       """
         if not self.model:
             raise RuntimeError("first load the model with 'load_model()' method then call inferece()")
         # transfer the data to the GPU, run inference and the copy the results back

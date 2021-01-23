@@ -23,6 +23,13 @@ import numpy as np
 import add_plugin_and_preprocess_ssd_mobilenet as plugin
 
 def export_trt(pb_file, output_dir, num_classes=90):
+    """
+    Exports the Tensorflow pb models to TensorRT engines.
+    Args:
+        pb_file: The path of input pb file
+        output_dir: A directory to store the output files
+        num_classes: Detector's number of classes
+    """
     lib_flatten_concat_file = "exporters/libflattenconcat.so.6"
     # initialize
     if trt.__version__[0] < '7':
@@ -74,7 +81,7 @@ def export_trt(pb_file, output_dir, num_classes=90):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="This script compiles a pb tensorflow model to a TRT engine")
+    parser = argparse.ArgumentParser(description="This script exports a pb tensorflow model to a TRT engine")
     parser.add_argument("--pb_file", type=str, required=True, help="the path of input pb file")
     parser.add_argument("--out_dir", type=str, required=True, help="a directory to store the output files")
     parser.add_argument("--num_classes", type=int, default=90, help="detector's number of classes")

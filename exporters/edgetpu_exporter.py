@@ -4,6 +4,12 @@ import argparse
 
 
 def export_edgetpu(tflite_model, out_dir):
+    """
+    Compile quantized tflite models to the Edge TPU. note that this module can not run on ARM devices like Coral Dev Board.
+    Args:
+        tflite_model: Path of the input tflite file
+        out_dir: Directory to store the output compiled file
+    """
     if not os.path.isfile(tflite_model):
         raise FileNotFoundError("the provided tflite file : {0} is not exist".format(tflite_model))
     if not os.path.isdir(out_dir):

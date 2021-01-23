@@ -4,7 +4,7 @@ import abc
 class BaseDetector(abc.ABC):
     """
     A base class for detectors.
-    the following should be overridden:
+    The following should be overridden:
     load_model()
     preprocess()
     inference()
