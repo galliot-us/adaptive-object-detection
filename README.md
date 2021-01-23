@@ -70,3 +70,23 @@ Note that if you do not provide the model file, the default COCO model will be u
 ## Adaptive Learning
 
 Adaptive learning is the process of customization of object detection models with user provided data and environments. For more information please visit our [blog post](https://neuralet.com/article/adaptive-learning/).
+
+### Services
+Neuralet adaptive learning service includes client/server side. By the client side you can start an adaptive learning task on cloud and get the model after training.
+
+* Run the docker container based on your device and the below commends inside the container:
+```
+cd services/adaptive-learning/client
+
+# 1) Initiate a new task
+python client.py --task_type 0 --config configs/iterdet.ini
+
+# 2) Get a task status (enter the task id at TASKID)
+python client.py --task_type 1 --task_id TASKID
+
+# 3) Download the trained model
+python client.py --task_type 2 --task_id TASKID
+
+# 4) Upload a file (a *.zip file include a video) for training the model by
+python client.py --task_type 3 --file_path FILE_PATH
+```

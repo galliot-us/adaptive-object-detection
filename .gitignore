@@ -2,9 +2,11 @@ data/
 __pycache__/
 *.~
 .*.swp
+*.bin
 *.pb
 *.tflite
 *.csv
-*.idea
-venv
+.idea/
+venv/
+.env
 .vscode
