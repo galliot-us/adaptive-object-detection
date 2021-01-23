@@ -90,4 +90,3 @@ python client.py --task_type 2 --task_id TASKID
 # 4) Upload a file (a *.zip file include a video) for training the model by
 python client.py --task_type 3 --file_path FILE_PATH
 ```
-
