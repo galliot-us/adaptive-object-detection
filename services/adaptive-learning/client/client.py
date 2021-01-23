@@ -31,7 +31,7 @@ def upload_file(file_path):
 def main():
     argparse = ArgumentParser()
     argparse.add_argument('--config', type=str, help='config file path', default='configs/config-x86.ini')
-    argparse.add_argument('--task_id', type=int, halp='running task id', default=0)
+    argparse.add_argument('--task_id', type=int, help='running task id', default=0)
     argparse.add_argument('--task_type', type=int, help=''
                                                         '0: initialize a new adaptive learning request'
                                                         '1: get the status of initialized task'
@@ -49,11 +49,9 @@ def main():
     if task_type == 0:
         print(f"Task type {task_type}: Initialize a new task.")
         init_task(config_path)
-
     elif task_type == 1:
         print(f"Task type {task_type}: Get task status from server.")
         get_task_status(task_id)
-
     elif task_type == 2:
         print(f"Task type {task_type}: Download the trained model from server.")
         download_model(task_id)

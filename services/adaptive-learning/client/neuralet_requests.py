@@ -69,7 +69,7 @@ class NeuraletRequest():
         r = requests.get(url=url, headers=headers)
         if r.status_code == 200:
             upload_link = r.json()['upload_link']
-            command = 'curl "' + str(upload_link) + '"' + str(file_path)
+            command = 'curl "' + str(upload_link) + '" --upload-file ' + str(file_path)
             os.system(command)
             uploade_file_dir = r.json()['name']
             return uploade_file_dir
