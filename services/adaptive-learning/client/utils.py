@@ -1,9 +1,14 @@
 from configparser import ConfigParser
 from collections import defaultdict
-import simplejson
+import json
 
 
 def ini2json(config_path):
+    '''
+    Convert .ini config file to json
+    :param config_path: The path of .ini config file
+    :return:
+    '''
     config = ConfigParser()
     config.optionxform = str
     config.read_file(open(config_path))
@@ -12,10 +17,15 @@ def ini2json(config_path):
         for key, value in config.items(sections):
             config_dict[sections][key] = value
 
-    return simplejson.dumps(config_dict)
+    return json.dumps(config_dict)
 
 
 def json2ini(cfg_json):
+    '''
+    Convert json to .ini file formats
+    :param cfg_json: Json format content
+    :return:
+    '''
     config_parser = ConfigParser()
     config_parser.optionxform = str
     for section in cfg_json.keys():

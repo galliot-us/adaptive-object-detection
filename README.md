@@ -78,14 +78,14 @@ Neuralet adaptive learning service includes client/server side. By the client si
 ```
 cd services/adaptive-learning/client
 
-# 1) Initiate a new task
+# 1) Initiate a new job
 python client.py train --config CONFIG
 
-# 2) Get a task status (enter the task id at TASKID)
-python client.py get_status --task_id TASKID
+# 2) Get a job status (enter the job id at TASKID)
+python client.py get_status --job_id JOBID
 
 # 3) Download the trained model
-python client.py download_file --task_id TASKID
+python client.py download_file --job_id JOBID
 
 # 4) Upload a file (a *.zip file include a video) for training the model by
 python client.py upload_file --file_path FILE_PATH
