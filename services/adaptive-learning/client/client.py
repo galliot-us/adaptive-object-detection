@@ -37,7 +37,7 @@ def upload_file(file_path, server_address='https://api.neuralet.io'):
 def main():
     argparse = ArgumentParser()
     argparse.add_argument('--config', type=str, help='config file path', default='configs/iterdet.ini')
-    argparse.add_argument('--job_id', type=int, help='running job id', default=0)
+    argparse.add_argument('--job_id', type=str, help='running job id', default=0)
     argparse.add_argument('--task_type', type=int, help=''
                                                         '0: initialize a new adaptive learning request'
                                                         '1: get the status of initialized task'
