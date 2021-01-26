@@ -11,6 +11,14 @@ class NeuraletRequest():
 
     @staticmethod
     def send_config(config_path, server_address='https://api.neuralet.io'):
+        '''
+        Send a config to server for starting a new job
+        :param config_path: Path of .ini config file
+        :param server_address: Server address
+        :return:
+        '''
+
+        # Convert .ini config to json format
         config_json = ini2json(config_path)
         headers = {
             "Content-Type": "application/json",
@@ -29,6 +37,12 @@ class NeuraletRequest():
 
     @staticmethod
     def get_model(job_id, server_address='https://api.neuralet.io'):
+        '''
+        Download the frozen graph of trained model
+        :param job_id: Job id of initiated task
+        :param server_address: Server Address
+        :return:
+        '''
         url = server_address + "/api/v1/download/"
         headers = {
             "Content-Type": "application/json",
@@ -50,6 +64,12 @@ class NeuraletRequest():
 
     @staticmethod
     def get_task_status(job_id, server_address='https://api.neuralet.io'):
+        '''
+        Get the status of initiated job
+        :param job_id: Job id of initiated task
+        :param server_address: Server Address
+        :return:
+        '''
         url = server_address + "/api/v1/status/"
         headers = {
             "Content-Type": "application/json",
@@ -67,6 +87,12 @@ class NeuraletRequest():
 
     @staticmethod
     def send_file(file_path, server_address='https://api.neuralet.io'):
+        '''
+        Upload a file to the server and provide a uuid for further using
+        :param file_path: .zip file path
+        :param server_address: Server Address
+        :return: uuid
+        '''
         url = server_address + "/api/v1/upload/"
         headers = {
             "Content-Type": "application/json",
