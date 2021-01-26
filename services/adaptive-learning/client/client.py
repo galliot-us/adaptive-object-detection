@@ -37,7 +37,7 @@ def main():
     train_parser.set_defaults(action="train")
     status_parser = subparsers.add_parser("get_status")
     status_parser.set_defaults(action="get_status")
-    download_parser = subparsers.add_parser("downlaod_file")
+    download_parser = subparsers.add_parser("download_file")
     download_parser.set_defaults(action="download_file")
 
     upload_parser.add_argument('--file_path', type=str, help='file path for uploading', required=True)
