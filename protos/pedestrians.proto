@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+package neuralet_adaptive_learning;
+
+message Bbox {
+  optional float left = 1;
+  optional float top = 2;
+  optional float right = 3;
+  optional float bottom = 4;
+  optional float score = 5;
+
+}
+
+message Person {
+  optional string id = 1; 
+  optional Bbox bbox = 2;
+}
+
+message Frame {
+  optional int32 frame_number = 1;
+  optional int32 fps = 2;
+  optional int32 width = 3;
+  optional int32 height = 4;
+  repeated Person people = 5;
+}
