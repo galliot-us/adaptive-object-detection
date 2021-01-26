@@ -29,38 +29,40 @@ def upload_file(file_path):
 
 
 def main():
-    argparse = ArgumentParser()
-    argparse.add_argument('--config', type=str, help='config file path', default='configs/config-x86.ini')
-    argparse.add_argument('--task_id', type=int, help='running task id', default=0)
-    argparse.add_argument('--task_type', type=int, help=''
-                                                        '0: initialize a new adaptive learning request'
-                                                        '1: get the status of initialized task'
-                                                        '2: download the trained model'
-                                                        '3: upload file',
-                          default=0)
-    argparse.add_argument('--file_path', type=str, help='file path for uploading', default=None)
+    parser = ArgumentParser()
+    subparsers = parser.add_subparsers()
+    upload_parser = subparsers.add_parser("upload_file")
+    upload_parser.set_defaults(action="upload_file")
+    train_parser = subparsers.add_parser("train")
+    train_parser.set_defaults(action="train")
+    status_parser = subparsers.add_parser("get_status")
+    status_parser.set_defaults(action="get_status")
+    download_parser = subparsers.add_parser("download_file")
+    download_parser.set_defaults(action="download_file")
 
-    args = argparse.parse_args()
-    config_path = args.config
-    task_id = args.task_id
-    task_type = args.task_type
-    file_path = args.file_path
+    upload_parser.add_argument('--file_path', type=str, help='file path for uploading', required=True)
+    train_parser.add_argument('--config', type=str, help='config file path', required=True)
+    status_parser.add_argument('--task_id', type=str, help='running task id', required=True)
+    download_parser.add_argument('--task_id', type=str, help='running task id', required=True)
 
-    if task_type == 0:
-        print(f"Task type {task_type}: Initialize a new task.")
-        init_task(config_path)
-    elif task_type == 1:
-        print(f"Task type {task_type}: Get task status from server.")
-        get_task_status(task_id)
-    elif task_type == 2:
-        print(f"Task type {task_type}: Download the trained model from server.")
-        download_model(task_id)
-    elif task_type == 3:
-        print(f"Task type {task_type}: Upload file to server.")
-        upload_file(file_path)
-    else:
-        raise ValueError(f"Task type {task_type}: Is not supported")
 
+    args = parser.parse_args()
+    
+    if args.action == "upload_file":
+        print("Upload file to server.")
+        upload_file(args.file_path)
+
+    elif args.action == "train":
+        print("Initialize a new task.")
+        init_task(args.config_path)
+
+    elif args.action == "get_status":
+        print("Get task status from server.")
+        get_task_status(args.task_id)
+
+    elif args.action == "download_file":
+        print(f"Download the trained model from server.")
+        download_model(args.task_id)
 
 if __name__ == "__main__":
     main()
