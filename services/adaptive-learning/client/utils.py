@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from collections import defaultdict
-import simplejson
+import json
 
 
 def ini2json(config_path):
@@ -12,7 +12,7 @@ def ini2json(config_path):
         for key, value in config.items(sections):
             config_dict[sections][key] = value
 
-    return simplejson.dumps(config_dict)
+    return json.dumps(config_dict)
 
 
 def json2ini(cfg_json):
