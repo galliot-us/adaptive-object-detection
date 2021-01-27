@@ -78,30 +78,39 @@ Neuralet adaptive learning service includes client/server side. By the client si
 
 `cd services/adaptive-learning/client`
 
-#Step 1:
+**#Step 1:**
+
 Create an `input.zip` file from the video file you want to feed to Adaptive Learning.
 
 `zip input.zip PATH_TO_VIDEO_FILE`
 
-#Step 2:
+**#Step 2:**
+
 Upload the zip file and get a unique id:
 
 `python client.py upload_file --file_path FILE_PATH`
 
-#Step 3:
+**#Step 3:**
+
 Add the previous step's unique id to the `UploadUUID` field and the video file name to the `VideoFile` field of config file. You can find a more comprehensive explanation of config file and its fields in the next section.
 Note: You can use the sample config file in `configs/sample_config.ini`
 
-#Step 4:
+**#Step 4:**
+
 Initiate a new job and get your job's ID:
+
 `python client.py train --config_path CONFIGPATH`
 
-#Step 5:
+**#Step 5:**
+
 Get a job status (enter the job id at JASKID)
+
 `python client.py get_status --job_id JOBID`
 
-#Step 6:
+**#Step 6:**
+
 Download the trained model whenever the job has been finished
+
 `python client.py download_file --job_id JOBID`
 
 ### Adaptive Learning Config File
