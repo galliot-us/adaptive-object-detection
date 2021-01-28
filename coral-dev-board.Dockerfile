@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y python3-pip pkg-config libedgetpu1-std
 RUN python3 -m pip install --upgrade pip==19.3.1 setuptools==41.0.0 && python3 -m pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_aarch64.whl protobuf
 #if you needed tensorflow: grpcio==1.26.0  keras==2.2.4 protobuf https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.0.0/tensorflow-2.0.0-cp37-none-linux_aarch64.whl
 
-RUN apt-get update && apt-get install -y python3-wget python3-opencv python3-edgetpu
+RUN apt-get update && apt-get install -y python3-wget python3-opencv python3-edgetpu vim zip
 
 WORKDIR /repo/
 # Also if you use opencv: LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libgomp.so.1.0.0"

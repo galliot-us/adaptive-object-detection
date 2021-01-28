@@ -10,7 +10,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 VOLUME /repo
 
-RUN apt-get update && apt-get install -y python3-pip pkg-config 
+RUN apt-get update && apt-get install -y python3-pip pkg-config zip
 
 RUN python3 -m pip install --upgrade pip
 
@@ -18,7 +18,7 @@ RUN apt-get install -y python3-numpy
 
 RUN python3 -m pip install pycuda
 
-RUN apt-get install -y vim git 
+RUN apt-get install -y vim git
 RUN printf 'deb https://repo.download.nvidia.com/jetson/common r32 main\ndeb https://repo.download.nvidia.com/jetson/t210 r32 main' > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
 
 COPY ./trusted-keys /tmp/trusted-keys
@@ -36,7 +36,7 @@ RUN pip3 install wget pillow
 COPY ./exporters/libflattenconcat.so.6 /opt/libflattenconcat.so 
 COPY ./exporters/graphsurgeon.patch-4.2.2 /repo 
 COPY install_trtexporter.sh /repo
-RUN chmod +x /repo/install_trtexporter.sh && /repo/install.sh
+RUN chmod +x /repo/install_trtexporter.sh && /repo/install_trtexporter.sh
 
 # The `python3-opencv` package is old and doesn't support gstreamer video writer on Debian. So we need to manually build opencv.
 ARG OPENCV_VERSION=4.3.0

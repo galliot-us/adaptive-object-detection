@@ -38,13 +38,13 @@ class EdgeTpuDetector(BaseDetector):
         self.output_details = self.model.get_output_details()
 
     def preprocess(self, raw_image):
-    """
-    preprocess function prepares the raw input for inference.
-    Args:
-        raw_image: A BGR numpy array with shape (img_height, img_width, channels)
-    Returns:
-        rgb_resized_image: A numpy array which contains preprocessed verison of input
-    """
+        """
+        preprocess function prepares the raw input for inference.
+        Args:
+            raw_image: A BGR numpy array with shape (img_height, img_width, channels)
+        Returns:
+            rgb_resized_image: A numpy array which contains preprocessed verison of input
+        """
 
         resized_image = cv.resize(raw_image, (self.width, self.height))
         rgb_resized_image = cv.cvtColor(resized_image, cv.COLOR_BGR2RGB)
