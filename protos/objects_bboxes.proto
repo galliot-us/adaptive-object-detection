@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package neuralet_adaptive_learning;
+package neuralet_object_detection;
 
 message Bbox {
   optional float left = 1;
@@ -11,9 +11,10 @@ message Bbox {
 
 }
 
-message Person {
-  optional string id = 1; 
-  optional Bbox bbox = 2;
+message Instance {
+  optional string id = 1;
+  optional string category = 2;
+  optional Bbox bbox = 3;
 }
 
 message Frame {
@@ -21,5 +22,5 @@ message Frame {
   optional int32 fps = 2;
   optional int32 width = 3;
   optional int32 height = 4;
-  repeated Person people = 5;
+  repeated Instance objects = 5;
 }

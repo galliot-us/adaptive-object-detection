@@ -31,18 +31,62 @@ _TITLE_LEFT_MARGIN = 10
 _TITLE_TOP_MARGIN = 10
 
 STANDARD_COLORS = [
-    "Green",
-    "Blue"
+    'AliceBlue', 'Chartreuse', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque',
+    'BlanchedAlmond', 'BlueViolet', 'BurlyWood', 'CadetBlue', 'AntiqueWhite',
+    'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan',
+    'DarkCyan', 'DarkGoldenRod', 'DarkGrey', 'DarkKhaki', 'DarkOrange',
+    'DarkOrchid', 'DarkSalmon', 'DarkSeaGreen', 'DarkTurquoise', 'DarkViolet',
+    'DeepPink', 'DeepSkyBlue', 'DodgerBlue', 'FireBrick', 'FloralWhite',
+    'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod',
+    'Salmon', 'Tan', 'HoneyDew', 'HotPink', 'IndianRed', 'Ivory', 'Khaki',
+    'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue',
+    'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey',
+    'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue',
+    'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime',
+    'LimeGreen', 'Linen', 'Magenta', 'MediumAquaMarine', 'MediumOrchid',
+    'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen',
+    'MediumTurquoise', 'MediumVioletRed', 'MintCream', 'MistyRose', 'Moccasin',
+    'NavajoWhite', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed',
+    'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed',
+    'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple',
+    'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Green', 'SandyBrown',
+    'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue',
+    'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'GreenYellow',
+    'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White',
+    'WhiteSmoke', 'Yellow', 'YellowGreen'
 ]
 
 
+def _get_multiplier_for_color_randomness():
+    """Returns a multiplier to get semi-random colors from successive indices.
+    This function computes a prime number, p, in the range [2, 17] that:
+    - is closest to len(STANDARD_COLORS) / 10
+    - does not divide len(STANDARD_COLORS)
+    If no prime numbers in that range satisfy the constraints, p is returned as 1.
+    Once p is established, it can be used as a multiplier to select
+    non-consecutive colors from STANDARD_COLORS:
+    colors = [(p * i) % len(STANDARD_COLORS) for i in range(20)]
+    """
+    num_colors = len(STANDARD_COLORS)
+    prime_candidates = [5, 7, 11, 13, 17]
+
+    # Remove all prime candidates that divide the number of colors.
+    prime_candidates = [p for p in prime_candidates if num_colors % p]
+    if not prime_candidates:
+    	return 1
+
+    # Return the closest prime number to num_colors / 10.
+    abs_distance = [np.abs(num_colors / 10. - p) for p in prime_candidates]
+    num_candidates = len(abs_distance)
+    inds = [i for _, i in sorted(zip(abs_distance, range(num_candidates)))]
+    return prime_candidates[inds[0]]
 def draw_bounding_box_on_image_array(
         image,
         ymin,
         xmin,
         ymax,
         xmax,
-        color=(255, 0, 0),  # RGB
+        color="red",  # RGB
         thickness=4,
         display_str_list=(),
         use_normalized_coordinates=True,
@@ -87,7 +131,7 @@ def draw_bounding_box_on_image(
         xmin,
         ymax,
         xmax,
-        color=(255, 0, 0),  # RGB
+        color="red",  # RGB
         thickness=4,
         display_str_list=(),
         use_normalized_coordinates=True,
@@ -172,8 +216,7 @@ def visualize_boxes_and_labels_on_image_array(
         image,
         boxes,
         classes,
-        scores,
-        colors,
+        scores, 
         category_index,
         instance_masks=None,
         instance_boundaries=None,
@@ -273,7 +316,7 @@ def visualize_boxes_and_labels_on_image_array(
                         ]
 
     # Draw all boxes onto image.
-    for box, color in zip(boxes, colors):
+    for box, color in box_to_color_map.items():
         xmin, ymin, xmax, ymax = box
         if instance_masks is not None:
             draw_mask_on_image_array(image, box_to_instance_masks_map[tuple(box)], color=color)
@@ -323,7 +366,7 @@ def prepare_visualization(nn_out):
     is_violating = []
     colors = []
 
-    for i, obj in enumerate(nn_out.people):
+    for i, obj in enumerate(nn_out.objects):
 
         # Get the object id
         obj_id = obj.id
@@ -341,8 +384,7 @@ def prepare_visualization(nn_out):
 
     output_dict["detection_boxes"] = np.array(detection_boxes)
     output_dict["detection_scores"] = detection_scores
-    output_dict["detection_classes"] = detection_classes
-    output_dict["detection_colors"] = ["LightCoral"] * len(detection_classes)
+    output_dict["detection_classes"] = detection_classes 
     return output_dict
 
 
