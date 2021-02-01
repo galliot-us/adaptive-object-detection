@@ -1,5 +1,5 @@
 from .base_detector import BaseDetector
-from protos.pedestrians_pb2 import Bbox, Person, Frame
+from protos.objects_bboxes_pb2 import Bbox, Instance, Frame
 from utils.fps_calculator import convert_infr_time_to_fps
 import logging
 import time
@@ -13,7 +13,7 @@ from tflite_runtime.interpreter import Interpreter
 
 class EdgeTpuDetector(BaseDetector):
 
-    def load_model(self, model_path=None):
+    def load_model(self, model_path=None, label_map=None):
         """
         Loads model with specified model_path, if no model_path provided, the COCO model will be downloaded
         and saved under 'detectors/data/'.
@@ -36,6 +36,9 @@ class EdgeTpuDetector(BaseDetector):
         # Get the model input and output tensor details
         self.input_details = self.model.get_input_details()
         self.output_details = self.model.get_output_details()
+        self.classes = list(label_map.keys())
+        self.label_map = label_map
+
 
     def preprocess(self, raw_image):
         """
@@ -73,18 +76,19 @@ class EdgeTpuDetector(BaseDetector):
         # Use `tensor()` in order to get a pointer to the tensor.
         boxes = self.model.get_tensor(self.output_details[0]['index'])
         labels = self.model.get_tensor(self.output_details[1]['index'])
-        scores = self.model.get_tensor(self.output_details[2]['index'])
-        class_id = 0
+        scores = self.model.get_tensor(self.output_details[2]['index']) 
         frame = Frame(width=self.width, height=self.height, fps=self.fps)
         for i in range(boxes.shape[1]):  # number of boxes
-            if labels[0, i] == class_id and scores[0, i] > self.thresh:
+            label = labels[0, i] + 1
+            if label in self.classes and scores[0, i] > self.thresh:
                 left = boxes[0, i, 1]
                 top = boxes[0, i, 0]
                 right = boxes[0, i, 3]
                 bottom = boxes[0, i, 2]
                 score = scores[0, i]
-                frame.people.append(
-                                    Person(id=str(class_id) + '-' + str(i),
+                frame.objects.append(
+                                    Instance(id=str(int(label)) + '-' + str(i),
+                                            category= self.label_map[int(label)]["name"],
                                             bbox=Bbox(left=left, top=top, right=right, bottom=bottom, score=score)
                                             )
                                     ) 

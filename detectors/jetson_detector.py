@@ -1,5 +1,5 @@
 from .base_detector import BaseDetector
-from protos.pedestrians_pb2 import Bbox, Person, Frame
+from protos.objects_bboxes_pb2 import Bbox, Instance, Frame
 import cv2 as cv
 import ctypes
 import logging
@@ -74,7 +74,7 @@ class JetsonDetector(BaseDetector):
         self.host_outputs = None
 
 
-    def load_model(self, model_path=None):
+    def load_model(self, model_path=None, label_map=None):
         """ 
         Initialize TensorRT plugins, engine and context with given tensorrt engine file, if no file provided the default
         COCO model will be downloaded under 'detectors/data'.
@@ -91,6 +91,9 @@ class JetsonDetector(BaseDetector):
         self.cuda_outputs = []
         self.bindings = []
         self._init_cuda_stuff(model_path)
+        self.classes = list(label_map.keys())
+        self.label_map = label_map
+
 
     def _init_cuda_stuff(self, model_path):
         cuda.init()
@@ -191,15 +194,16 @@ class JetsonDetector(BaseDetector):
         boxes, scores, classes = self._postprocess_trt(output)
         frame = Frame(width=self.width, height=self.height, fps=self.fps)
         for i in range(len(boxes)):  # number of boxes
-            if classes[i] == 1:
+            if classes[i] in self.classes:
                 left = boxes[i][1]
                 top = boxes[i][0]
                 right = boxes[i][3]
                 bottom = boxes[i][2]
                 score = scores[i]
 
-                frame.people.append(
-                                    Person(id='1-' + str(i),
+                frame.objects.append(
+                                    Instance(id=str(int(classes[i]))+ "-" + str(i),
+                                        category=self.label_map[int(classes[i])]["name"]
                                         bbox=Bbox(left=left, top=top, right=right, bottom=bottom, score=score)
                                         )
                                     ) 

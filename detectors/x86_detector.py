@@ -1,5 +1,5 @@
 from .base_detector import BaseDetector
-from protos.pedestrians_pb2 import Bbox, Person, Frame
+from protos.objects_bboxes_pb2 import Bbox, Instance, Frame
 from utils.fps_calculator import convert_infr_time_to_fps
 import tensorflow as tf
 import numpy as np
@@ -14,7 +14,7 @@ import pathlib
 
 class X86Detector(BaseDetector):
     
-    def load_model(self, model_path=None):
+    def load_model(self, model_path=None, label_map=None):
         """
         Loads model with specified model_path, if no model_path provided, the COCO model will be downloaded
         and saved under 'detectors/data/'.
@@ -40,6 +40,8 @@ class X86Detector(BaseDetector):
         model = tf.saved_model.load(str(model_dir))
         model = model.signatures['serving_default']
         self.model = model
+        self.classes = list(label_map.keys())
+        self.label_map = label_map
 
     def preprocess(self, raw_image):
         """
@@ -78,17 +80,20 @@ class X86Detector(BaseDetector):
         labels = output_dict['detection_classes']
         scores = output_dict['detection_scores']
 
-        class_id = 1 
+ 
         frame = Frame(width=self.width, height=self.height, fps=self.fps) 
         for i in range(boxes.shape[1]):  # number of boxes
-            if labels[0, i] == class_id and scores[0, i] > self.thresh:
+            label_numpy = int(labels[0, i].numpy())
+            score_numpy = float(scores[0, i].numpy())
+            if label_numpy in self.classes and score_numpy > self.thresh:
                 left = boxes[0, i, 1]
                 top = boxes[0, i, 0]
                 right = boxes[0, i, 3]
                 bottom = boxes[0, i, 2]
                 score = scores[0, i]
-                frame.people.append(Person(
-                                            id=str(class_id) + '-' + str(i),
+                frame.objects.append(Instance(
+                                            id=str(label_numpy) + '-' + str(i),
+                                            category = self.label_map[label_numpy]["name"],
                                             bbox=Bbox(left=left, top=top, right=right, bottom=bottom, score=score)
                                             )
                                     )
