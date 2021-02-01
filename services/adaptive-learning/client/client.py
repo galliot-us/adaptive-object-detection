@@ -14,7 +14,7 @@ def init_task(cfg_path, server_address='https://api.neuralet.io'):
 def get_task_status(job_id, server_address='https://api.neuralet.io'):
     result = req.get_task_status(job_id, server_address)
     if result is not None:
-        print(result['status'])
+        print(result)
     else:
         print("Something went wrong. Please retry in a few minutes or contact the administrator!")
     return result
