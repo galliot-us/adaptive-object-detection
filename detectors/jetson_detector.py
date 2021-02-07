@@ -99,7 +99,7 @@ class JetsonDetector(BaseDetector):
         cuda.init()
         self.device = cuda.Device(0)  # enter your Gpu id here
         self.cuda_context = self.device.make_context()
-        self.model = self._load_engine(model_path)
+        self.model = self._load_engine(model_path) 
         self._allocate_buffers()
         self.engine_context = self.model.create_execution_context()
         self.stream = cuda.Stream()  # create a CUDA stream to run inference
@@ -203,7 +203,7 @@ class JetsonDetector(BaseDetector):
 
                 frame.objects.append(
                                     Instance(id=str(int(classes[i]))+ "-" + str(i),
-                                        category=self.label_map[int(classes[i])]["name"]
+                                        category=self.label_map[int(classes[i])]["name"],
                                         bbox=Bbox(left=left, top=top, right=right, bottom=bottom, score=score)
                                         )
                                     ) 
