@@ -88,7 +88,7 @@ Neuralet adaptive learning service includes client/server side. By the client si
 `cd services/adaptive-learning/client`
 
 **#Step 1:**
-Register and get a token from Neuralet.io (The detail will be updated)
+Register and get a token from Neuralet.io (The detail will be provided)
 
 **#Step 2:**
 
