@@ -88,6 +88,9 @@ Neuralet adaptive learning service includes client/server side. By the client si
 `cd services/adaptive-learning/client`
 
 **#Step 1:**
+Register and get a token from Neuralet.io (The detail will be updated)
+
+**#Step 2:**
 
 Create an `input.zip` file from the video file you want to feed to Adaptive Learning.
 
@@ -95,40 +98,40 @@ Create an `input.zip` file from the video file you want to feed to Adaptive Lear
 zip input.zip PATH_TO_VIDEO_FILE
 ```
 
-**#Step 2:**
+**#Step 3:**
 
 Upload the zip file and get a unique id:
 
 ```
-python3 client.py upload_file --file_path FILE_PATH
+python3 client.py --token TOKEN_PATH upload_file --file_path FILE_PATH
 ```
 
-**#Step 3:**
+**#Step 4:**
 
 Add the previous step's unique id to the `UploadUUID` field and the video file name to the `VideoFile` field of config file. You can find a more comprehensive explanation of config file and its fields in the next section.
 Note: You can use the sample config file in `configs/sample_config.ini`
 
-**#Step 4:**
+**#Step 5:**
 
 Initiate a new job and get your job's ID:
 
 ```
-python3 client.py train --config_path CONFIGPATH
-```
-
-**#Step 5:**
-
-Get a job status (enter the job id at JASKID)
-
-```
-python3 client.py get_status --job_id JOBID
+python3 client.py --token TOKEN_PATH train --config_path CONFIGPATH
 ```
 
 **#Step 6:**
 
+Get a job status (enter the job id at JASKID)
+
+```
+python3 client.py --token TOKEN_PATH get_status --job_id JOBID
+```
+
+**#Step 7:**
+
 Download the trained model whenever the job has been finished
 
-`python client.py download_file --job_id JOBID`
+`python client.py --token TOKEN_PATH download_file --job_id JOBID`
 
 ### Adaptive Learning Config File
 To customize the Adaptive Learning framework based on your needs, you must configure the sample config file on `configs/` directory.
