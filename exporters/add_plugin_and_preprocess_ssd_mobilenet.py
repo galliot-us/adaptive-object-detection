@@ -8,6 +8,7 @@ Reference:
 
 import tensorrt as trt
 import graphsurgeon as gs
+import tensorflow as tf
 import numpy as np
 
 def replace_addv2(graph):
@@ -35,7 +36,7 @@ def parse_gridAnchor(graph):
     """
 
     data = np.array([1, 1], dtype=np.float32) 
-    anchor_input = gs.create_node("AnchorInput", "Const", value=data)  
+    anchor_input = gs.create_node("AnchorInput", "Const", value=data, dtype=tf.float32)  
     graph.append(anchor_input)
     graph.find_nodes_by_op("GridAnchor_TRT")[0].input.insert(0, "AnchorInput")
 
@@ -65,7 +66,8 @@ def add_plugin_and_preprocess(graph, model, num_classes):
     Input = gs.create_plugin_node(
         name="Input",
         op="Placeholder",
-        shape=(1,) + input_dims 
+        shape=(1,) + input_dims,
+        dtype=tf.float32
     )
 
     PriorBox = gs.create_plugin_node(
@@ -76,7 +78,8 @@ def add_plugin_and_preprocess(graph, model, num_classes):
         aspectRatios=[1.0, 2.0, 0.5, 3.0, 0.33],
         variance=[0.1, 0.1, 0.2, 0.2],
         featureMapShapes=[19, 10, 5, 3, 2, 1],
-        numLayers=6
+        numLayers=6,
+        dtype=tf.float32
     )
 
     NMS = gs.create_plugin_node(
@@ -92,35 +95,41 @@ def add_plugin_and_preprocess(graph, model, num_classes):
         numClasses=num_classes,  # was 91
         inputOrder=input_order,
         confSigmoid=1,
-        isNormalized=1
+        isNormalized=1,
+        dtype=tf.float32
     )
 
     concat_priorbox = gs.create_node(
         "concat_priorbox",
         op="ConcatV2",
-        axis=2
+        axis=2,
+        dtype=tf.float32
     )
     if trt.__version__[0] >= '6':
         concat_box_loc = gs.create_plugin_node(
             "concat_box_loc",
             op="FlattenConcat_TRT",
             axis=1,
-            ignoreBatch=0
+            ignoreBatch=0,
+            dtype=tf.float32
         )
         concat_box_conf = gs.create_plugin_node(
             "concat_box_conf",
             op="FlattenConcat_TRT",
             axis=1,
-            ignoreBatch=0
+            ignoreBatch=0,
+            dtype=tf.float32
         )
     else:
         concat_box_loc = gs.create_plugin_node(
             "concat_box_loc",
-            op="FlattenConcat_TRT"
+            op="FlattenConcat_TRT",
+            dtype=tf.float32
         )
         concat_box_conf = gs.create_plugin_node(
             "concat_box_conf",
-            op="FlattenConcat_TRT"
+            op="FlattenConcat_TRT",
+            dtype=tf.float32
         )
 
     namespace_plugin_map = {
