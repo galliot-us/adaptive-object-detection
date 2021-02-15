@@ -1,5 +1,5 @@
 import requests
-from utils import ini2json, token_reader
+from utils import token_reader, json_reader
 import os
 import json
 
@@ -13,14 +13,12 @@ class NeuraletRequest():
     def send_config(config_path, token_file, server_address='https://api.neuralet.io'):
         '''
         Send a config to server for starting a new job
-        :param config_path: Path of .ini config file
+        :param config_path: Path of .json config file
         :param server_address: Server address
         :param token_file: Path of token file
         :return:
         '''
-
-        # Convert .ini config to json format
-        config_json = ini2json(config_path)
+        config_json = json_reader(config_path)
         url = server_address + '/api/v1/model/train/'
         token = token_reader(token_file)
         headers = {

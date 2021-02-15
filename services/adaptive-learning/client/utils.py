@@ -1,8 +1,6 @@
 from configparser import ConfigParser
 from collections import defaultdict
 import json
-import errno
-import os
 
 
 def token_reader(token_file_path: str):
@@ -10,9 +8,9 @@ def token_reader(token_file_path: str):
         with open(token_file_path) as file:
             token = file.read()
         return token
-    except:
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), token_file_path)
+    except FileExistsError as e:
+        print(e)
+    exit(1)
 
 
 def ini2json(config_path):
@@ -47,3 +45,13 @@ def json2ini(cfg_json):
             config_parser[section][key] = section_json[key]
 
     return config_parser
+
+
+def json_reader(file_path):
+    try:
+        with open(file_path) as file:
+            cfg = json.loads(file.read())
+            return cfg
+    except FileExistsError as e:
+        print(e)
+    exit(1)

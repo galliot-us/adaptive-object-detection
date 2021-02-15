@@ -1,6 +1,5 @@
 from neuralet_requests import NeuraletRequest
 from argparse import ArgumentParser
-from configs.config_engine import ConfigEngine
 import os
 
 req = NeuraletRequest()
@@ -49,7 +48,7 @@ def main():
     download_parser.set_defaults(action="download_file")
 
     upload_parser.add_argument('--file_path', type=str, help='file path for uploading', required=True)
-    train_parser.add_argument('--config_path', type=str, help='config file path', required=True)
+    train_parser.add_argument('--config_path', type=str, help='json config file path', required=True)
     status_parser.add_argument('--job_id', type=str, help='running job id', required=True)
     download_parser.add_argument('--job_id', type=str, help='running job id', required=True)
 
@@ -70,7 +69,7 @@ def main():
         get_task_status(args.job_id, token_file, server_adr)
 
     elif args.action == "download_file":
-        print(f"Download the trained model from server.")
+        print("Download the trained model from server.")
         download_model(args.job_id, token_file, server_adr)
 
 
