@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'neuralet_object_detection'
-copyright = '2021, alpha-carinae29'
-author = 'alpha-carinae29'
+project = 'Neuralet Edge Vision'
+copyright = '2021 - Neuralet'
+author = 'Neuralet'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
