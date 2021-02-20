@@ -66,7 +66,7 @@ class NeuraletRequest():
                 print("The model is saved at output.zip file.")
             else:
                 print(
-                    "The download link is no prepared. Please check your task status and try it after finishing the training process!"
+                    "The download link is not prepared. Please check your task status and try it after finishing the training process!"
                 )
         else:
             print(f'ERROR! ({r.status_code})')
