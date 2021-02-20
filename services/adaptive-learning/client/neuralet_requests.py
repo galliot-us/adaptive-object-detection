@@ -58,11 +58,16 @@ class NeuraletRequest():
         print(f"Waiting for {url} ...")
         r = requests.post(url, headers=headers, data=data)
         if r.status_code == 200:
-            download_link = r.json()['download_link']
-            print("Downloading model/output file...")
-            command = 'curl "' + download_link + '" --output output.zip'
-            os.system(command)
-            print("The model is saved at output.zip file.")
+            if "download_link" in r.json():
+                download_link = r.json()['download_link']
+                print("Downloading model/output file...")
+                command = 'curl "' + download_link + '" --output output.zip'
+                os.system(command)
+                print("The model is saved at output.zip file.")
+            else:
+                print(
+                    "The download link is no prepared. Please check your task status and try it after finishing the training process!"
+                )
         else:
             print(f'ERROR! ({r.status_code})')
 
