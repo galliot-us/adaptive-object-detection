@@ -52,6 +52,7 @@ def json_reader(file_path):
     try:
         with open(file_path) as file:
             cfg = json.loads(file.read())
+            cfg = json.dumps(cfg)
             return cfg
     except FileExistsError as e:
         print(e)
