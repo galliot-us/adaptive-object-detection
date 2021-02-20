@@ -7,6 +7,7 @@ def token_reader(token_file_path: str):
     try:
         with open(token_file_path) as file:
             token = file.read()
+            token = token.rstrip("\n")
         return token
     except FileExistsError as e:
         print(e)
