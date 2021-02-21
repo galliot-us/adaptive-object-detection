@@ -3,6 +3,17 @@ from collections import defaultdict
 import json
 
 
+def token_reader(token_file_path: str):
+    try:
+        with open(token_file_path) as file:
+            token = file.read()
+            token = token.rstrip("\n")
+        return token
+    except FileExistsError as e:
+        print(e)
+    exit(1)
+
+
 def ini2json(config_path):
     '''
     Convert .ini config file to json
@@ -35,3 +46,14 @@ def json2ini(cfg_json):
             config_parser[section][key] = section_json[key]
 
     return config_parser
+
+
+def json_reader(file_path):
+    try:
+        with open(file_path) as file:
+            cfg = json.loads(file.read())
+            cfg = json.dumps(cfg)
+            return cfg
+    except FileExistsError as e:
+        print(e)
+    exit(1)
