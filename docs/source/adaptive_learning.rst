@@ -1,95 +1,194 @@
 Adaptive Learning
 =================
 
-Adaptive learning is the process of customization of object detection models with user-provided data and environments. For more information, please visit our `blog post <https://neuralet.com/article/adaptive-learning/>`_.
+Neuralet Adaptive Learning Service is designed to customize the object detection models to the provided datasets and specified environments by customers. For more information, please visit our `blog post <https://neuralet.com/article/adaptive-learning/>`_.
 
 Client
 ^^^^^^
 
-Neuralet adaptive learning service includes client/server side. You can start an adaptive learning task on the cloud and get the model after training on the client-side.
+There are two methods for users to call different endpoints of Adaptive Learning API. The first method uses the :code:`curl`'s command-line tool in which the user should type raw commands, and the other more straightforward way is to use our simple Python Client interface.
 
-Run the docker container based on your device and the below commends inside the container: ::
+For using our client interface, you only need to have python on your machine, clone our repository to your system, and go to the provided directory using the commands below. ::
+    
+    git clone https://github.com/neuralet/edge-object-detection.git
+    cd edge-object-detection/services/adaptive-learning/client
 
-    cd services/adaptive-learning/client
+Either you prefer to use curl or our interface, we are going to address a step-by-step guide to run Adaptive Learning using each of the methods in the following.
 
-**#Step 1:**
+**#Step 0: Authentication**
+At the beginning, you need to go to our `API home page <https://api.neuralet.io/>`_ and sign up using your email address and password. By clicking on the sign-up button, a verification link will be sent to your email address. After verifying your account, you can sign in to Neuralet’s Adaptive Edge Vision API. Now you are able to get your token using the provided section and keep it for the next steps.
 
-Create an :code:`input.zip` file from the video file you want to feed to Adaptive Learning. ::
+**#Step 1: Preparing Video File**
+
+After logging in and getting your token, you should upload the video file you want to feed Adaptive Learning. Since our API only accepts **zip files** as the input format, you need to create a compressed zip file from your video file, preferably using the name of :code:`input.zip`. ::
 
     zip -j input.zip PATH_TO_VIDEO_FILE
 
-**#Step 2:**
+**#Step 2: Uploading Video**
 
-Upload the zip file and get a unique id: ::
+After creating the :code:`input.zip` file, you are ready to upload it to Neuralet’s Servers. After the uploading process, you will receive a unique id (:code:`UUID`), which will be required later in the config file step.
 
-    python3 client.py upload_file --file_path FILE_PATH
+You can upload your file using one of the following methods:
 
-**#Step 3:**
+*Client Code:*
 
-Add the previous step's unique id to the :code:`UploadUUID` field and the video file name to the :code:`VideoFile` field of the config file. You can find a more comprehensive explanation of the config file and its fields in the next section. Note: You can use the sample config file in :code:`configs/sample_config.ini`
+If you are using the client code, you should first save your token (provided to you in step0) as a text file and type the path to this file instead of :code:`TOKEN_PATH` in the python command below. The :code:`FILE_PATH` is the address to the :code:`input.zip` file that you have created in step 1. After running the python command successfully, the unique id (:code:`UUID`) will show up. ::
 
-**#Step 4:**
+    python3 client.py --token TOKEN_PATH upload_file --file_path FILE_PATH
 
-Initiate a new job and get your job's ID: ::
+*Curl Command:*
 
-    python3 client.py train --config_path CONFIGPATH
+If you prefer to work with the curl, you need to follow these two stages to upload your video and get your unique id.
 
-**#Step 5:**
+* Get Upload URL:
 
-Get a job status (enter the job id at JASKID) ::
+  In this part, you should only copy your token (provided to you in step 0) and paste it instead of :code:`TOKEN` in the command. ::
 
-    python3 client.py get_status --job_id JOBID
+      curl -X GET "https://api.neuralet.io/api/v1/file/upload/" -H  "accept: application/json" -H "Authorization: Bearer TOKEN"
+      
+  After running this command, it will return a json containing two items. The first key is :code:`name`, which has your unique id (:code:`UUID`), and you should keep it for the config step. The second key is :code:`upload_link` that you should use as :code:`UploadURL` in the next part.
 
+* Upload File:
+  In this stage, you must put the :code:`UploadLink` you have copied in the last part in place of UploadURL. For the :code:`FILE_PATH`, you need to input the path to the input.zip file you have created in the first step. ::
 
-The expected status massages are as follows:
-
-.. csv-table:: a title
-    :header: "Parameter", "Comments"
-    :widths: 10, 20
-
-    "Allocating Resource", "Allocating compute machine to your job"
-    "Building", "Building an environment to start a job"
-    "Training", "Running a Adaptive Learning Job"
-    "Wrapping Up", "Saving data and finishing the job"
-    "Finished", "The job has been finished. Note that it doesn't mean that the job has been finished successfully. it may finished with error"
-    "Failed", "There was a problem in Neuralet infrastructure"
-    "Not Reached Yet", "The job's workflow have not been reached to this stage yet"     
-    "Unexpected Error", "An internal error has occurred"
-
-**#Step 6:**
-
-Download the trained model whenever the job has been finished. ::
-
-    python3 client.py download_file --job_id JOBID
-
-**What is inside :code:`output.zip` file?**
-
-:code:`train_outputs` : Contains all of the Adaptive Learning files.
-
-:code:`train_outputs/frozen_graph` : Contains all of required files for inference and exporting to the edge devices. Pass this directory to :code:`inference.py` in :code:`x86` devices for running inference on trained model.
-
-:code:`train_outputs/frozen_graph/frozen_inference_graph.pb` : When :code:`QuantizedModel` is :code:`false` in config file this file is inside frozen_graph directory. You can pass this file to the Jetson Exporter to create TensorRT engine.
-
-:code:`train_outputs/frozen_graph/detect.tflite` : When :code:`QuantizedModel` is :code:`true` in config file this file is inside frozen_graph directory. This is the qunatized :code:`tflite` file. You can pass it to EdgeTPU exporter to create an edgetpu compiled tflite file.
-
-:code:`event.out.tfevents` : This is the training log file of Adaptive Learning. You can open this file with :code:`tensorboard` and monitor training progress.
+      curl "UploadURL" --upload-file FILE_PATH
 
 
+**#Step 3: Configure Your Training**
 
-Adaptive Learning Config File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In order to start the adaptive learning process on your uploaded file, you should tune and modify the :code:`sample_config.json` file presented in our `repository <https://github.com/neuralet/edge-object-detection/blob/main/services/adaptive-learning/client/configs/sample_config.json>`_.
 
-To customize the Adaptive Learning framework based on your needs, you must configure the sample config file on :code:`configs/` directory. There is a brief explanation of each parameter of config files in the following table:
+There are two mandatory fields in the sample_config file, which you are required to set. First, you must copy-paste your unique id (:code:`UUID` provided to you in the previous step) in front of the :code:`UploadUUID` field. The second field is :code:`VideoFile`, in which you should put your video file’s name against it. (Please pay attention that this is the name of your original video, e.g., :code:`softbio.mp4`) ::
 
-.. csv-table:: a title
+    UploadUUID = Your_Unique_ID
+    VideoFile = Your_video_File_Name.mp4
+
+In addition, there are a few more fields presented in the sample config file that you can modify based on your requirements. For example, in the config file's :code:`Classes` field, you can choose between 90 different Object Categories of COCO's dataset by writing your desired classes' name with a comma-separated format to train your model. Notice that the default value (:code:`coco`) will train all of the 90 object categories. You can find the 90 classes of COCO’s dataset in their `original research paper <https://arxiv.org/abs/1405.0312>`_. Furthermore, it is possible to change :code:`PostProcessing` and :code:`ImageFeature` values for the Teacher model and :code:`QuantizedModel` value for the Student network.
+
+To do this, you need to adjust the sample config file on the :code:`configs/` directory. Thus, we have prepared a brief explanation for each of the config files' parameters and options in the following table. You can also use the sample config file in :code:`configs/sample_config.json`.
+
+.. csv-table:: Config File Fields
     :header: "Parameter", "Options", "Comments"
-    :widths: 10, 20, 20
 
 
     "Teacher/UploadUUID", "a UUID", "Unique id of uploaded input.zip file."
     "Teacher/VideoFile", "string", "Name of the video you zipped and uploaded."
-    "Teacher/Classes", "comma-seperated string without space", "A list of classes names that you want to train on. these classes should be a subset of COCO classes. For all COCO classes just put :code:`coco`"
-    "Teacher/PostProcessing", "One of :code:`'background_filter'` or :code:`' '` ", "Background filter will apply a background subtraction algorithm on video frames and discards the bounding boxes in which their background pixels rate is higher than a defined threshold."
+    "Teacher/Classes", "comma-seperated string", "A list of class names that you want to train your model on. These classes should be a subset of COCO classes. You can find the COCO’s category names in their original paper. To train on all of the 90 COCO classes, just put :code:`'coco'.`"
+    "Teacher/PostProcessing", "Either :code:`'background_filter'` or :code:`' '` ", "Background filter will apply a background subtraction algorithm on video frames and discards the bounding boxes in which their background pixels rate is higher than a defined threshold. For more explanation on the concept, you can read our previous `adaptive learning article. <https://neuralet.com/article/adaptive-learning/>`_"
     "Teacher/ImageFeature", "One of the :code:`'foreground_mask'`, :code:`'optical_flow_magnitude'`, :code:`'foreground_mask && optical_flow_magnitude'` or :code:`' '`", "This parameter specifies the type of input feature engineering that will perform for training. :code:`'foreground_mask'` replaces one of the RGB channels with the foreground mask. :code:`'optical_flow_magnitude'` replaces one of the RGB channels with the magnitude of optical flow vectors and, :code:`'foreground_mask && optical_flow_magnitude'` performs two feature engineering technique at the same time as well as changing the remaining RGB channel with the grayscale transformation of the frame. For more information about feature engineering and its impact on the model's accuracy, visit `our blog <https://neuralet.com/article/adaptive-learning/>`_ ."
     "Student/QuantizedModel", "true or false", "whether to train the student model with quantization aware strategy or not. This is especially useful when you want to deploy the final model on an edge device that only supports :code:`Int8` precision like Edge TPU. By applying quantization aware training the App will export a :code:`tflite` too."
+
+
+**#Step 4: Start a Training Job**
+
+Up until now, you have uploaded your video file and tuned the config file’s parameters for training. Now you are ready to request to train your adaptive learning model.
+At the end of this step, by running the command using either the Client code or :code:`curl`, you will get a **Job id** that you should keep for monitoring your training status in the next steps.
+
+*Client Code:*
+
+As same as the second step, you need to input the path to your token text file instead of :code:`TOKEN_PATH` and the address of your config file in the :code:`CONFIG_FILE` field. ::
+
+    python3 client.py --token TOKEN_PATH train --config_path CONFIG_PATH
+
+*Curl Command:*
+
+Again, similar to the second step, you should copy-paste the token we have provided to you at the beginning instead of :code:`TOKEN`. Additionally, you must give the path to your config file in the :code:`JSON_CONFIGFILE_PATH` field. ::
+
+    curl -X POST "https://api.neuralet.io/api/v1/model/train/" -H "accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" -d @JSON_CONFIGFILE_PATH
+
+
+**#Step 5: Get Job Status**
+
+At this moment, your model is training on the Neuralet’s servers that may take from a few hours to a couple of days to finish based on the video length. Meanwhile, if you want to know your model’s status at each moment, you are going to use this command.
+In this stage, you can request a job status using the **Job id** generated in the last step to observe the operation progress.
+
+*Client Code:*
+
+Enter the address to your token text file and your Job id, respectively, in the provided :code:`TOKEN_PATH` and :code:`JOBID` fields of the command and run it. ::
+    
+    python3 client.py --token TOKEN_PATH get_status --job_id JOBID
+
+*Curl Command:*
+
+You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field, and input your job id in the given field for :code:`JOB_ID`. ::
+
+    curl -X POST "https://api.neuralet.io/api/v1/model/status/" -H  "accept: application/json" -H  "Content-Type: application/json" -H "Authorization: Bearer TOKEN" -d "{\"job_id\":\"JOB_ID\"}"
+
+By running the command and sending your request to our API, you may get one of the following messages for either the Teacher or Student models each time you request for the status:
+
+.. csv-table:: Status Massages
+    :header: "Message", "Description"
+
+    "Allocating Resource", "We are Allocating Resources (e.g., a computing machine) to your job."
+    "Building", "We have allocated the resources, and the program is Building an environment (installing the required packages) to start your job."
+    "Training", "The Training process has started. An Adaptive Learning Job is Running."
+    "Wrapping Up", "Your training is about to finish and is Saving data and completing the job."
+    "Finished", "The job has been finished successfully."
+    "Failed", "If the process faces an infrastructural or hardware problem such as Neuralet’s server failure, you will see this message."
+    "Not Reached Yet", "It usually appears as the student model's status, which means the job's workflow has not reached the student model's training phase yet. I.e., while the teacher model is running, the student model's status will be Not Reached Yet."     
+    "Unexpected Error", "An internal error has occurred"
+
+**#Step 6: Download your model**
+
+Finally, you have reached the final step, and the job has finished successfully. Now you can download your Adaptive Learning’s trained student model. After running one of the below commands based on your preference, you will receive a file named :code:`output.zip` that we will explain the contents in the next section.
+
+*Client Code:*
+
+As you would probably know, you should insert the address to your token file in the :code:`TOKEN_PATH` field and replace your job id with :code:`JOBID`, just like what you did in step five. ::
+
+    python3 client.py --token TOKEN_PATH download_file --job_id JOBID
+
+*Curl Command:*
+
+If you are using the curl, there are two stages here to finally get your output file:
+
+* Get your upload link:
+
+  You only need to act like step five once more for replacing the :code:`TOKEN` and :code:`JOB_ID` fields using the token and job id you have saved before. Running this command will return an :code:`upload_link` which you need in the next part. ::
+
+      curl -X POST "https://api.neuralet.io/api/v1/file/download/" -H "accept: application/json" -H "Authorization: Bearer TOKEN" -H "Content-Type: application/json" -d "{\"job_id\":\"JOB_ID\"}"
+
+* Download your file:
+
+  Now by putting the :code:`upload_link` that you have received in the previous step against the provided field and running the command, your output file's download process will start. ::
+
+       wget "upload_link" -O output.zip
+
+**What does the output.zip file contain?**
+
+After extracting the output.zip file in your computer, you will see the main directory of this zip file named :code:`train_outputs`, which contains all of the Adaptive Learning files and directories. Here we will walk through the files and directories inside the :code:`train_ouputs` and present a brief explanation of their contents.
+
+First, we are going to introduce the most important files inside the :code:`train_ouputs`:
+
+:code:`validation_vid.mp4` :
+
+This is a video with a maximum length of 40 seconds, which compares the results of running an SSD-MobileNet-V2 model trained on COCO (Baseline model) and the Adaptive Learning trained (Student) model on a validation set video (Not used in the training process). 
+
+
+:code:`label_map.pbtxt` :
+
+This :code:`pbtxt` file contains a series of mappings that connects a set of class IDs with the corresponding class names. To run the inference code of this module, you should pass this file to the script to classify each object with the right name.
+
+:code:`events.out.tfevents` :
+
+If you want to monitor and analyze your training process, you can open this file using **TensorBoard** and observe each step of the Adaptive Learning model training process.
+
+So far, we have introduced the most important files in the :code:`train_outputs` directory. Now we are going to explain the contents of the :code:`train_outputs/frozen_graph directory`.
+
+:code:`train_outputs/frozen_graph` :
+
+Actually, this is the main directory of our trained model, which contains all of the required files for inferencing and exporting to the edge devices.
+
+:code:`train_outputs/frozen_graph/frozen_inference_graph.pb` :
+
+For running your model on Jetson, you should pass this file to the export module that we have built for edge object detection. So it will export and create a TensorRT engine for you.
+
+:code:`train_outputs/frozen_graph/detect.tflite` :
+
+If you have had set your :code:`QuantizedModel` as :code:`true` in the config file, this file would be available to you inside the frozen_graph directory.
+The importance of this file is for exporting your model to the EdgeTPU. In this case, our EdgeTPU exporter accepts this :code:`detect.tflite` file as an input to create an edgetpu compiled tflite file.
+
+:code:`train_outputs/frozen_graph/saved_model` :
+
+This is the last important directory we are introducing here. The :code:`frozen_graph/saved_model` contains a TensorFlow :code:`saved-model` for inferencing on X86s.
 
