@@ -69,7 +69,6 @@ To do this, you need to adjust the sample config file on the :code:`configs/` di
 
 .. csv-table:: Config File Fields
     :header: "Parameter", "Options", "Comments"
-    :widths: 10%, 20%, 20%
 
 
     "Teacher/UploadUUID", "a UUID", "Unique id of uploaded input.zip file."
@@ -119,7 +118,6 @@ By running the command and sending your request to our API, you may get one of t
 
 .. csv-table:: Status Massages
     :header: "Message", "Description"
-    :widths: 10%, 20%
 
     "Allocating Resource", "We are Allocating Resources (e.g., a computing machine) to your job."
     "Building", "We have allocated the resources, and the program is Building an environment (installing the required packages) to start your job."
