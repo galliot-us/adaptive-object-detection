@@ -1,0 +1,14 @@
+{
+  "Teacher":
+  {
+    "UploadUUID": "2fc3cd96-6489-11eb-93db-c20e1e9a7b01",
+    "VideoFile": "multiobject.mp4",
+    "Classes": "coco",
+    "PostProcessing": " ",
+    "ImageFeature": " "
+  },
+  "Student":
+  {
+    "QuantizedModel": "false"
+  }
+}

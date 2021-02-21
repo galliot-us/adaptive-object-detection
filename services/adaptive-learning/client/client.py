@@ -1,18 +1,17 @@
 from neuralet_requests import NeuraletRequest
 from argparse import ArgumentParser
-from configs.config_engine import ConfigEngine
 import os
 
 req = NeuraletRequest()
 
 
-def init_task(cfg_path, server_address='https://api.neuralet.io'):
-    job_id = req.send_config(cfg_path, server_address)
+def init_task(cfg_path, token_file, server_address='https://api.neuralet.io'):
+    job_id = req.send_config(cfg_path, token_file, server_address)
     return job_id
 
 
-def get_task_status(job_id, server_address='https://api.neuralet.io'):
-    result = req.get_task_status(job_id, server_address)
+def get_task_status(job_id, token_file, server_address='https://api.neuralet.io'):
+    result = req.get_task_status(job_id, token_file, server_address)
     if result is not None:
         print(result)
     else:
@@ -20,14 +19,14 @@ def get_task_status(job_id, server_address='https://api.neuralet.io'):
     return result
 
 
-def download_model(job_id, server_address='https://api.neuralet.io'):
-    req.get_model(job_id, server_address)
+def download_model(job_id, token_file, server_address='https://api.neuralet.io'):
+    req.get_model(job_id, token_file, server_address)
 
 
-def upload_file(file_path, server_address='https://api.neuralet.io'):
+def upload_file(file_path, token_file, server_address='https://api.neuralet.io'):
     uuid = None
     if os.path.isfile(file_path):
-        uuid = req.send_file(file_path, server_address)
+        uuid = req.send_file(file_path, token_file, server_address)
         print("UploadUUID: ", uuid)
     else:
         raise Exception("Invalid Arguments, expected a file that exists not %r" % (file_path))
@@ -35,10 +34,10 @@ def upload_file(file_path, server_address='https://api.neuralet.io'):
 
 
 def main():
-
     parser = ArgumentParser()
     subparsers = parser.add_subparsers()
     parser.add_argument("--url", type=str, default="https://api.neuralet.io")
+    parser.add_argument("--token", type=str)
     upload_parser = subparsers.add_parser("upload_file")
     upload_parser.set_defaults(action="upload_file")
     train_parser = subparsers.add_parser("train")
@@ -49,29 +48,30 @@ def main():
     download_parser.set_defaults(action="download_file")
 
     upload_parser.add_argument('--file_path', type=str, help='file path for uploading', required=True)
-    train_parser.add_argument('--config_path', type=str, help='config file path', required=True)
+    train_parser.add_argument('--config_path', type=str, help='json config file path', required=True)
     status_parser.add_argument('--job_id', type=str, help='running job id', required=True)
     download_parser.add_argument('--job_id', type=str, help='running job id', required=True)
 
-
     args = parser.parse_args()
     server_adr = args.url
+    token_file = args.token
+
     if args.action == "upload_file":
         print("Upload file to server.")
-        upload_file(args.file_path, server_adr)
+        upload_file(args.file_path, token_file, server_adr)
 
     elif args.action == "train":
         print("Initialize a new job.")
-        init_task(args.config_path, server_adr)
+        init_task(args.config_path, token_file, server_adr)
 
     elif args.action == "get_status":
         print("Get job status from server.")
-        get_task_status(args.job_id, server_adr)
-
+        get_task_status(args.job_id, token_file, server_adr)
 
     elif args.action == "download_file":
-        print(f"Download the trained model from server.")
-        download_model(args.job_id, server_adr)
+        print("Download the trained model from server.")
+        download_model(args.job_id, token_file, server_adr)
+
 
 if __name__ == "__main__":
     main()

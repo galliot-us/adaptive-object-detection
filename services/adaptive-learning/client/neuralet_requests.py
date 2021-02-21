@@ -1,5 +1,5 @@
 import requests
-from utils import ini2json
+from utils import token_reader, json_reader
 import os
 import json
 
@@ -10,21 +10,22 @@ class NeuraletRequest():
     """
 
     @staticmethod
-    def send_config(config_path, server_address='https://api.neuralet.io'):
+    def send_config(config_path, token_file, server_address='https://api.neuralet.io'):
         '''
         Send a config to server for starting a new job
-        :param config_path: Path of .ini config file
+        :param config_path: Path of .json config file
         :param server_address: Server address
+        :param token_file: Path of token file
         :return:
         '''
-
-        # Convert .ini config to json format
-        config_json = ini2json(config_path)
+        config_json = json_reader(config_path)
+        url = server_address + '/api/v1/model/train/'
+        token = token_reader(token_file)
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Authorization": f"Bearer {token}"
         }
-        url = server_address + '/api/v1/train/'
         print(f"Waiting for {url} ...")
         r = requests.post(url, headers=headers, data=config_json)
         if r.status_code == 200:
@@ -36,17 +37,20 @@ class NeuraletRequest():
             return None
 
     @staticmethod
-    def get_model(job_id, server_address='https://api.neuralet.io'):
+    def get_model(job_id, token_file, server_address='https://api.neuralet.io'):
         '''
         Download the frozen graph of trained model
         :param job_id: Job id of initiated task
+        :param token_file: Path of token file
         :param server_address: Server Address
         :return:
         '''
-        url = server_address + "/api/v1/download/"
+        url = server_address + "/api/v1/file/download/"
+        token = token_reader(token_file)
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Authorization": f"Bearer {token}"
         }
 
         data = {"job_id": str(job_id)}
@@ -54,26 +58,34 @@ class NeuraletRequest():
         print(f"Waiting for {url} ...")
         r = requests.post(url, headers=headers, data=data)
         if r.status_code == 200:
-            download_link = r.json()['download_link']
-            print("Downloading model/output file...")
-            command = 'curl "' + download_link + '" --output output.zip'
-            os.system(command)
-            print("The model is saved at output.zip file.")
+            if "download_link" in r.json():
+                download_link = r.json()['download_link']
+                print("Downloading model/output file...")
+                command = 'curl "' + download_link + '" --output output.zip'
+                os.system(command)
+                print("The model is saved at output.zip file.")
+            else:
+                print(
+                    "The download link is not prepared. Please check your task status and try it after finishing the training process!"
+                )
         else:
             print(f'ERROR! ({r.status_code})')
 
     @staticmethod
-    def get_task_status(job_id, server_address='https://api.neuralet.io'):
+    def get_task_status(job_id, token_file, server_address='https://api.neuralet.io'):
         '''
         Get the status of initiated job
         :param job_id: Job id of initiated task
+        :param token_file: The path of token file
         :param server_address: Server Address
         :return:
         '''
-        url = server_address + "/api/v1/status/"
+        url = server_address + "/api/v1/model/status/"
+        token = token_reader(token_file)
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Authorization": f"Bearer {token}"
         }
         data = {"job_id": str(job_id)}
         data = json.dumps(data)
@@ -86,17 +98,19 @@ class NeuraletRequest():
             return None
 
     @staticmethod
-    def send_file(file_path, server_address='https://api.neuralet.io'):
+    def send_file(file_path, token_file, server_address='https://api.neuralet.io'):
         '''
         Upload a file to the server and provide a uuid for further using
         :param file_path: .zip file path
         :param server_address: Server Address
         :return: uuid
         '''
-        url = server_address + "/api/v1/upload/"
+        url = server_address + "/api/v1/file/upload/"
+        token = token_reader(token_file)
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Authorization": f"Bearer {token}"
         }
         print(f"Waiting for {url} ...")
         print("Uploading file, please wait it may take a while ...!")
