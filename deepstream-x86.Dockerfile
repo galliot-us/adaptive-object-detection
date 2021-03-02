@@ -6,5 +6,4 @@ VOLUME  /repo
 WORKDIR /repo
 
 ENTRYPOINT ["bash", "deepstream.bash"]
-CMD ["-f", "$FROZEN_INFERENCE_GRAPH_PATH"]
 
