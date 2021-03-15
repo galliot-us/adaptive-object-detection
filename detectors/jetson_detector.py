@@ -32,7 +32,7 @@ class JetsonDetector(BaseDetector):
             if not os.path.isfile(model_path):
                 logging.info('model does not exist under: {}, downloading from {}'.format(str(model_path), base_url + model_file))
                 os.makedirs(base_dir, exist_ok=True)
-                wget.download(base_url + model_file, model_path)
+                os.system("bash /repo/generate_tensorrt.bash")
         """ Load engine file as a trt Runtime. """
         with open(model_path, 'rb') as f, trt.Runtime(self.trt_logger) as runtime:
             return runtime.deserialize_cuda_engine(f.read())

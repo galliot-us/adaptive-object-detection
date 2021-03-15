@@ -44,7 +44,7 @@ def parse_gridAnchor(graph):
 
 
 
-def add_plugin_and_preprocess(graph, model, num_classes):
+def add_plugin_and_preprocess(graph, model, num_classes, neuralet_adaptive_model):
     """add_plugin
 
     Reference:
@@ -56,6 +56,8 @@ def add_plugin_and_preprocess(graph, model, num_classes):
     min_size = 0.2
     max_size = 0.95
     input_order = [0, 2, 1]
+    if neuralet_adaptive_model == 0:
+        input_order = [1, 0, 2]
     input_dims = (3, 300, 300)
     
     all_assert_nodes = graph.find_nodes_by_op("Assert")
