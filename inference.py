@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import logging
 import os
+import faulthandler
 from utils.visualization_utils import prepare_visualization, visualize_boxes_and_labels_on_image_array
 from utils.parse_label_map import create_category_index_dict
 logging.basicConfig(level=logging.INFO)
@@ -76,6 +77,7 @@ def inference(args):
 
 
 if __name__ == "__main__":
+    faulthandler.enable()
     parser = argparse.ArgumentParser(description="This script runs the inference of object detection models")
     parser.add_argument("--device", type=str, required=True, help="one of x86|edgetpu|jetson")
     parser.add_argument("--input_video", type=str, required=True, help="input video path")
