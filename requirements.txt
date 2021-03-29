@@ -1,0 +1,10 @@
+fastapi
+requests==2.25.0
+requirements-parser==0.2.0
+pytest-asyncio
+uvicorn==0.13.1
+setuptools==41.0.0
+wget
+pillow
+opencv-python
+python-multipart
