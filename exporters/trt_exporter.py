@@ -22,7 +22,7 @@ import graphsurgeon as gs
 import numpy as np
 import add_plugin_and_preprocess_ssd_mobilenet as plugin
 
-def export_trt(pb_file, output_dir, num_classes=90):
+def export_trt(pb_file, output_dir, num_classes=90, neuralet_adaptive_model=1):
     """
     Exports the Tensorflow pb models to TensorRT engines.
     Args:
@@ -52,7 +52,8 @@ def export_trt(pb_file, output_dir, num_classes=90):
     dynamic_graph = plugin.add_plugin_and_preprocess(
         gs.DynamicGraph(pb_file),
         model,
-        num_classes)
+        num_classes,
+        neuralet_adaptive_model)
     model_file_name = ".".join((pb_file.split("/")[-1]).split(".")[:-1])
     uff_path = os.path.join(output_dir, model_file_name + ".uff")
     _ = uff.from_tensorflow(
@@ -85,9 +86,11 @@ if __name__ == "__main__":
     parser.add_argument("--pb_file", type=str, required=True, help="the path of input pb file")
     parser.add_argument("--out_dir", type=str, required=True, help="a directory to store the output files")
     parser.add_argument("--num_classes", type=int, default=90, help="detector's number of classes")
+    parser.add_argument("--neuralet_adaptive_model", type=int, default=1, help="1 if the model is trained by Neuralet adaptive learning,0 if not")
     args = parser.parse_args()
     pb_file = args.pb_file
     output_dir = args.out_dir
     num_classes = args.num_classes
-    export_trt(pb_file=pb_file, output_dir=output_dir, num_classes=num_classes)
+    neuralet_adaptive_model = args.neuralet_adaptive_model
+    export_trt(pb_file=pb_file, output_dir=output_dir, num_classes=num_classes, neuralet_adaptive_model=neuralet_adaptive_model)
 
