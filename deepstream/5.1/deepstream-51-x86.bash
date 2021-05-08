@@ -1,6 +1,11 @@
 #!/bin/bash
 
-videoPath="file://$1"
+if [ $# -eq 1 ]
+then
+    videoPath=$1
+fi
+
+videoPath="file://$videoPath"
 
 cd ssd_mobilenet_v2 && mkdir -p 1
 cp /repo/deepstream-data/frozen_inference_graph.pb 1/model.graphdef

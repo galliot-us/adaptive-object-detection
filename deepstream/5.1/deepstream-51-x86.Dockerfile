@@ -6,4 +6,3 @@ VOLUME  /repo
 WORKDIR /repo/deepstream/5.1
 
 ENTRYPOINT ["bash", "deepstream-51-x86.bash"]
-CMD ["/repo/softbio_vid.mp4"]
