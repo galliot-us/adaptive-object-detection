@@ -80,7 +80,7 @@ You can see the result in section below: ::
 * Upload File:
   In this stage, you must put the :code:`upload_object.url` you have copied in the last part in place of UploadURL. For the :code:`FILE_PATH`, you need to input the path to the input.zip file you have created in the first step. ::
 
-      curl "UploadURL" -F "key=UUID/input.zip" -F "AWSAccessKeyId"=ASIA..." -F "x-amz-security-token=IQoJb3..." -F "policy-eyJleHBpcmF0aW9uI..." -F "signature=M3bcjKw..." -F "file=@FILE_PATH"
+      curl "UploadURL" -F "key=UUID/input.zip" -F "AWSAccessKeyId"=ASIA..." -F "x-amz-security-token=IQoJb3..." -F "policy=eyJleHBpcmF0aW9uI..." -F "signature=M3bcjKw..." -F "file=@FILE_PATH"
 
 
 **Step 3: Configure Your Training**
