@@ -302,7 +302,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
 
-    curl "https://api.neuralet.io/api/v1/users/me/uploads/" -H "Authorization: Bearer TOKEN"
+    curl "https://api.neuralet.io/api/v1/users/me/uploads" -H "Authorization: Bearer TOKEN"
 
 
 *Response:*
