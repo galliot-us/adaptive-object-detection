@@ -93,7 +93,6 @@ class NeuraletRequest:
         print(f"Waiting for {url} ...")
         r = requests.post(url, headers=headers, data=data)
         if r.status_code == 200:
-            pprint(r.json())
             return r.json()  # TODO: parse and return
         else:
             print(f"ERROR! ({r.status_code})")
