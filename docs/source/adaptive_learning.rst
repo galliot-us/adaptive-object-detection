@@ -37,7 +37,7 @@ You can upload your file using one of the following methods:
 
 If you are using the client code, you should first save your token (provided to you in step0) as a text file and type the path to this file instead of :code:`TOKEN_PATH` in the python command below. The :code:`FILE_PATH` is the address to the :code:`input.zip` file that you have created in step 1. After running the python command successfully, the unique id (:code:`UUID`) will show up. ::
 
-    python3 client.py --token TOKEN_PATH upload_file --file_path FILE_PATH
+    python3 client.py --token TOKEN_PATH upload_file --file_path FILE_PATH --label crowded_street --video_names "elm_street.mp4,helm_street.mp4"
 
 *Curl Command:*
 
@@ -54,17 +54,17 @@ If you prefer to work with the curl, you need to follow these two stages to uplo
 
     1. label: Label indicates that in the future you can distinct the uploads from each other (in current situation only distinction between uploads is their ids which can be difficult to read).
     
-    2. video_names (comma-separated names): Video names included in zip file in comma-separated format (like :code:`video1.mp4,video2.mp4`).
+    2. video_names (comma-separated names): Video names included in zip file in comma-separated format for future use in website (like :code:`video1.mp4,video2.mp4`).
 
     If you intend to pass these 2 parameters your url will be like this: ::
         
-        https://api.neuralet.io/api/v1/file/upload/?label=crowded-street&?video_names=elm_street.mp4,helm_street.mp4
+        curl -X GET https://api.neuralet.io/api/v1/file/upload/?label=crowded-street&video_names=elm_street.mp4,helm_street.mp4 -H  "accept: application/json" -H "Authorization: Bearer TOKEN"
 
 
 
 After running this command, it will return a json containing two items. The first key is :code:`name`, which has your unique id (:code:`UUID`), and you should keep it for the config step. The second key is :code:`upload_object` which contains 2 keys: :code:`url` and :code:`fields`. 
 
-You can see the result in section below: ::
+You can see the result in section below (save it for next part): ::
     
     "upload_object":{
         "url":"https://neuralet-adaptive.s3.amazonaws.com/",
@@ -78,7 +78,7 @@ You can see the result in section below: ::
     }
 
 * Upload File:
-  In this stage, you must put the :code:`upload_object.url` you have copied in the last part in place of UploadURL. For the :code:`FILE_PATH`, you need to input the path to the input.zip file you have created in the first step. ::
+  In this stage, you must put the :code:`upload_object.url` you have copied in the last part in place of UploadURL. Use data in :code:`upload_object.fields` from last part to pass as form-data. For the :code:`FILE_PATH`, you need to input the path to the input.zip file you have created in the first step. ::
 
       curl "UploadURL" -F "key=UUID/input.zip" -F "AWSAccessKeyId"=ASIA..." -F "x-amz-security-token=IQoJb3..." -F "policy=eyJleHBpcmF0aW9uI..." -F "signature=M3bcjKw..." -F "file=@FILE_PATH"
 
@@ -258,31 +258,32 @@ Get User jobs list.
 
 Enter the address to your token text file. respectively, in the provided :code:`TOKEN_PATH` field of the command and run it. ::
     
-    python3 client.py --token TOKEN_PATH user_jobs
+    python3 client.py --token TOKEN_PATH user_jobs --page 1
 
 *Curl Command:*
 
 You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
 
-    curl "https://api.neuralet.io/api/v1/users/me/jobs/" -H "Authorization: Bearer TOKEN"
+    curl "https://api.neuralet.io/api/v1/users/me/jobs" -H "Authorization: Bearer TOKEN"
 
 
 *Response:*
 
 .. code-block:: json
     
-    "jobs": [
-        {
+    {
+        "jobs": [
+            {
             "job_id": "WcLbF1VOB904wk/aMNsfU1==",
             "created_at": "2021-04-05T21:23:31.815000"
-        },
-        {
+            },
+            {
             "job_id": "/3I5rFqL+E4sQyskPTLNWg==",
             "created_at": "2021-03-07T16:49:41.249000"
-        }
-    ],
-    "number_of_pages": 1,
-    "current_page": 1
+            }
+        ],
+        "number_of_pages": 1,
+        "current_page": 1
     }
 
 
@@ -295,7 +296,7 @@ Get User uploads list.
 
 Enter the address to your token text file. respectively, in the provided :code:`TOKEN_PATH` field of the command and run it. ::
     
-    python3 client.py --token TOKEN_PATH user_uploads
+    python3 client.py --token TOKEN_PATH user_uploads --page 1
 
 *Curl Command:*
 
@@ -309,28 +310,28 @@ You only need to repeat the previous step and copy-paste your token in the :code
 .. code-block:: json
     
     {
-    "uploads": [
-        {
-        "name": "fdef2df4-afdb-11eb-b2c8-9a66efb8f595",
-        "label": "crowded-street-number-1",
-        "created_at": "2021-05-08T09:01:35.795000",
-        "video_names": [
-            "video1.mp4",
-            "video2.mp4"
-        ]
-        },
-        {
-        "name": "5ed05020-afaa-11eb-b7cx-6ec41806e103",
-        "label": "",
-        "created_at": "2021-05-07T17:33:43.757000",
-        "video_names": [
-            "video11.mp4",
-            "video12.mp4"
-        ]
-        }
-    ],
-    "number_of_pages": 1,
-    "current_page": 1
+        "uploads": [
+            {
+            "name": "fdef2df4-afdb-11eb-b2c8-9a66efb8f595",
+            "label": "crowded-street-number-1",
+            "created_at": "2021-05-08T09:01:35.795000",
+            "video_names": [
+                "video1.mp4",
+                "video2.mp4"
+            ]
+            },
+            {
+            "name": "5ed05020-afaa-11eb-b7cx-6ec41806e103",
+            "label": "",
+            "created_at": "2021-05-07T17:33:43.757000",
+            "video_names": [
+                "video11.mp4",
+                "video12.mp4"
+            ]
+            }
+        ],
+        "number_of_pages": 1,
+        "current_page": 1
     }
 
 
@@ -349,7 +350,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
 
-    curl "https://api.neuralet.io/api/v1/users/me/detail/" -H "Authorization: Bearer TOKEN"
+    curl "https://api.neuralet.io/api/v1/users/me/detail" -H "Authorization: Bearer TOKEN"
 
 
 *Response:*
