@@ -30,10 +30,6 @@ def kill_job(job_id, token_file, server_address="https://api.neuralet.io"):
     req.kill_job(job_id, token_file, server_address)
 
 
-def kill_job(job_id, token_file, server_address="https://api.neuralet.io"):
-    req.kill_job(job_id, token_file, server_address)
-
-
 def user_jobs(token_file, server_address="https://api.neuralet.io", page=1):
     req.user_jobs(token_file, server_address, page)
 

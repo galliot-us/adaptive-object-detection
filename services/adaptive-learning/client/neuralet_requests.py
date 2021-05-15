@@ -157,7 +157,7 @@ class NeuraletRequest:
         print(f"Waiting for {url} ...")
         r = requests.post(url, headers=headers, data=data)
         if r.status_code == 200:
-            return r.content  # TODO: parse and return
+            return r.content
         else:
             print(f"ERROR! ({r.status_code})")
             return None
@@ -181,8 +181,9 @@ class NeuraletRequest:
         print(f"Waiting for {url} ...")
         r = requests.get(url, headers=headers, params=params)
         if r.status_code == 200:
-            pprint(pop_classess_from_response(r.json()))
-            return r.json()  # TODO: parse and return
+            response = r.json()
+            pprint(pop_classess_from_response(response))
+            return response
         else:
             print(f"ERROR! ({r.status_code})")
             return None
@@ -208,8 +209,9 @@ class NeuraletRequest:
         print(f"Waiting for {url} ...")
         r = requests.get(url, headers=headers, params=params)
         if r.status_code == 200:
-            pprint(pop_classess_from_response(r.json()))
-            return r.json()  # TODO: parse and return
+            response = r.json()
+            pprint(pop_classess_from_response(response))
+            return response
         else:
             print(f"ERROR! ({r.status_code})")
             return None
@@ -232,8 +234,9 @@ class NeuraletRequest:
         print(f"Waiting for {url} ...")
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
-            pprint(r.json())
-            return r.json()  # TODO: parse and return
+            response = r.json()
+            pprint(response)
+            return response
         else:
             print(f"ERROR! ({r.status_code})")
             return None
