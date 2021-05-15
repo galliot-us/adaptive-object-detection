@@ -80,7 +80,7 @@ You can see the result in section below (save it for next part): ::
 * Upload File:
   In this stage, you must put the :code:`upload_object.url` you have copied in the last part in place of UploadURL. Use data in :code:`upload_object.fields` from last part to pass as form-data. For the :code:`FILE_PATH`, you need to input the path to the input.zip file you have created in the first step. ::
 
-      curl "UploadURL" -F "key=UUID/input.zip" -F "AWSAccessKeyId"=ASIA..." -F "x-amz-security-token=IQoJb3..." -F "policy=eyJleHBpcmF0aW9uI..." -F "signature=M3bcjKw..." -F "file=@FILE_PATH"
+      curl "UploadURL" -F "key=UUID/input.zip" -F "AWSAccessKeyId=ASIA..." -F "x-amz-security-token=IQoJb3..." -F "policy=eyJleHBpcmF0aW9uI..." -F "signature=M3bcjKw..." -F "file=@FILE_PATH"
 
 
 **Step 3: Configure Your Training**
@@ -264,7 +264,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
 
-    curl "https://api.neuralet.io/api/v1/users/me/jobs" -H "Authorization: Bearer TOKEN"
+    curl "https://api.neuralet.io/api/v1/users/me/jobs?page=1" -H "Authorization: Bearer TOKEN"
 
 
 *Response:*
@@ -302,7 +302,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
 
-    curl "https://api.neuralet.io/api/v1/users/me/uploads" -H "Authorization: Bearer TOKEN"
+    curl "https://api.neuralet.io/api/v1/users/me/uploads?page=1" -H "Authorization: Bearer TOKEN"
 
 
 *Response:*
