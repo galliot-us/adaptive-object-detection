@@ -15,11 +15,11 @@ def token_reader(token_file_path: str):
 
 
 def ini2json(config_path):
-    '''
+    """
     Convert .ini config file to json
     :param config_path: The path of .ini config file
     :return:
-    '''
+    """
     config = ConfigParser()
     config.optionxform = str
     config.read_file(open(config_path))
@@ -32,11 +32,11 @@ def ini2json(config_path):
 
 
 def json2ini(cfg_json):
-    '''
+    """
     Convert json to .ini file formats
     :param cfg_json: Json format content
     :return:
-    '''
+    """
     config_parser = ConfigParser()
     config_parser.optionxform = str
     for section in cfg_json.keys():
@@ -57,3 +57,8 @@ def json_reader(file_path):
     except FileExistsError as e:
         print(e)
     exit(1)
+
+
+def pop_classess_from_response(response):
+    response.pop("classes", None)
+    return response
