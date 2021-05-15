@@ -262,7 +262,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 *Curl Command:*
 
-You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
+You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. Also you can change the page number to see other pages. ::
 
     curl "https://api.neuralet.io/api/v1/users/me/jobs?page=1" -H "Authorization: Bearer TOKEN"
 
@@ -300,7 +300,7 @@ Enter the address to your token text file. respectively, in the provided :code:`
 
 *Curl Command:*
 
-You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. ::
+You only need to repeat the previous step and copy-paste your token in the :code:`TOKEN` field. Also you can change the page number to see other pages. ::
 
     curl "https://api.neuralet.io/api/v1/users/me/uploads?page=1" -H "Authorization: Bearer TOKEN"
 
