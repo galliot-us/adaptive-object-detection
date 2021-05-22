@@ -35,6 +35,10 @@ from common.bus_call import bus_call
 from ssd_parser import nvds_infer_parse_custom_tf_ssd, DetectionParam, NmsParam, BoxSizeParam
 import pyds
 from common.FPS import GETFPS
+import argparse
+import os
+from functools import partial
+
 
 fps_streams={}
 CLASS_NB = 91
@@ -46,7 +50,6 @@ MIN_BOX_WIDTH = 32
 MIN_BOX_HEIGHT = 32
 TOP_K = 20
 IOU_THRESHOLD = 0.3
-OUTPUT_VIDEO_NAME = "./out.mp4"
 
 
 def get_label_names_from_file(filepath):
@@ -72,7 +75,7 @@ def make_elm_or_print_err(factoryname, name, printedname, detail=""):
     return elm
 
 
-def osd_sink_pad_buffer_probe(pad, info, u_data):
+def osd_sink_pad_buffer_probe(pad, info, u_datat, label_path):
     frame_number = 0
     # Intiallizing object counter with 0.
     obj_counter = dict(enumerate([0] * CLASS_NB))
@@ -126,7 +129,7 @@ def osd_sink_pad_buffer_probe(pad, info, u_data):
         # allocated string. Use pyds.get_string() to get the string content.
         id_dict = {
             val: index
-            for index, val in enumerate(get_label_names_from_file("ssd_mobilenet_v2/labels.txt"))
+            for index, val in enumerate(get_label_names_from_file(label_path))
         }
         disp_string = "Frame Number={} Number of Objects={} Person_count={}"
         py_nvosd_text_params.display_text = disp_string.format(
@@ -222,7 +225,7 @@ def add_obj_meta_to_frame(frame_object, batch_meta, frame_meta, label_names):
     pyds.nvds_add_obj_meta_to_frame(frame_meta, obj_meta, None)
 
 
-def pgie_src_pad_buffer_probe(pad, info, u_data):
+def pgie_src_pad_buffer_probe(pad, info, u_data, label_path):
 
     gst_buffer = info.get_buffer()
     if not gst_buffer:
@@ -238,9 +241,9 @@ def pgie_src_pad_buffer_probe(pad, info, u_data):
     detection_params = DetectionParam(CLASS_NB, ACCURACY_ALL_CLASS)
     box_size_param = BoxSizeParam(IMAGE_HEIGHT, IMAGE_WIDTH,
                                   MIN_BOX_WIDTH, MIN_BOX_HEIGHT)
-    nms_param = NmsParam(TOP_K, IOU_THRESHOLD)
+    ms_param = NmsParam(TOP_K, IOU_THRESHOLD)
 
-    label_names = get_label_names_from_file("ssd_mobilenet_v2/labels.txt")
+    label_names = get_label_names_from_file(label_path)
 
     while l_frame is not None:
         try:
@@ -365,11 +368,15 @@ def create_source_bin(index, uri):
     return nbin
 
 
-def main(args):
+def main():
     # Check input arguments
-    if len(args) != 3:
-        sys.stderr.write("usage: file://<path to media file or uri> path_to_label_file\n" % args[0])
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Deepstream inference application")
+    parser.add_argument("--input_video", type=str, required=True, help="Input video path")
+    parser.add_argument("--out_dir", type=str, required=True, help="Directory to store result")
+    parser.add_argument("--inference_type", type=int, required=True, help="0 for TensorRT and 1 for TensorFlow Frozen Inference Graph")
+    parser.add_argument("--config", type=str, required=True, help="Deepstream Config file")
+    parser.add_argument("--label_path", type=str, required=True, help="Label file Path")
+    args = parser.parse_args() 
 
     fps_streams["stream{0}".format(0)]=GETFPS(0)
     # Standard GStreamer initialization
@@ -385,7 +392,7 @@ def main(args):
         sys.stderr.write(" Unable to create Pipeline \n")
 
     # Source element for reading from the file
-    source = create_source_bin(0, args[1])
+    source = create_source_bin(0, args.input_video)
     
     # Since the data format in the input file is elementary h264 stream,
     # we need a h264parser
@@ -397,7 +404,10 @@ def main(args):
     pipeline.add(source)
     # Use nvinferserver to run inferencing on decoder's output,
     # behaviour of inferencing is set through config file
-    pgie = make_elm_or_print_err("nvinferserver", "primary-inference", "Nvinferserver")
+    if args.inference_type == 0:
+        pgie = make_elm_or_print_err("nvinfer", "primary-inference", "Nvinferserver")
+    elif args.inference_type == 1:
+        pgie = make_elm_or_print_err("nvinferserver", "primary-inference", "Nvinferserver")
 
     # Use convertor to convert from NV12 to RGBA as required by nvosd
     nvvidconv = make_elm_or_print_err("nvvideoconvert", "convertor", "Nvvidconv")
@@ -432,17 +442,20 @@ def main(args):
     container = make_elm_or_print_err("qtmux", "qtmux", "Container")
 
     sink = make_elm_or_print_err("filesink", "filesink", "Sink")
-
-    sink.set_property("location", OUTPUT_VIDEO_NAME)
+    video_base_path = os.path.basename(args.input_video)
+    output_video_path = args.out_dir + "/neuralet_deepstream_" + video_base_path
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+    sink.set_property("location", output_video_path)
     sink.set_property("sync", 0)
     sink.set_property("async", 0)
 
-    print("Playing file %s " % args[1])
+    print("Playing file %s " % args.input_video)
     streammux.set_property("width", IMAGE_WIDTH)
     streammux.set_property("height", IMAGE_HEIGHT)
     streammux.set_property("batch-size", 1)
     streammux.set_property("batched-push-timeout", 4000000)
-    pgie.set_property("config-file-path", "dstest_ssd_nopostprocess.txt")
+    pgie.set_property("config-file-path", args.config)
 
     print("Adding elements to Pipeline \n")
     pipeline.add(streammux)
@@ -491,8 +504,9 @@ def main(args):
     pgiesrcpad = pgie.get_static_pad("src")
     if not pgiesrcpad:
         sys.stderr.write(" Unable to get src pad of primary infer \n")
-
-    pgiesrcpad.add_probe(Gst.PadProbeType.BUFFER, pgie_src_pad_buffer_probe, 0)
+    
+    pgie_src_pad_buffer_probe_label = partial(pgie_src_pad_buffer_probe, label_path= args.label_path)
+    pgiesrcpad.add_probe(Gst.PadProbeType.BUFFER, pgie_src_pad_buffer_probe_label, 0)
 
     # Lets add probe to get informed of the meta data generated, we add probe to
     # the sink pad of the osd element, since by that time, the buffer would have
@@ -501,7 +515,8 @@ def main(args):
     if not osdsinkpad:
         sys.stderr.write(" Unable to get sink pad of nvosd \n")
 
-    osdsinkpad.add_probe(Gst.PadProbeType.BUFFER, osd_sink_pad_buffer_probe, 0)
+    osd_sink_pad_buffer_probe_label = partial(osd_sink_pad_buffer_probe, label_path = args.label_path)
+    osdsinkpad.add_probe(Gst.PadProbeType.BUFFER, osd_sink_pad_buffer_probe_label, 0)
 
     # start play back and listen to events
     print("Starting pipeline \n")
@@ -515,4 +530,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())
