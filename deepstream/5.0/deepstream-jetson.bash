@@ -9,7 +9,8 @@ if [ ! -f $label_file_path ]; then
 fi
 
 export CUDA_VER=10.2
-cd nvdsinfer_custom_impl_ssd/ && make
+cd ../../libs/nvdsinfer_custom_impl_ssd/ && make
 cd ../nvdsinfer_customparser/ && make
-cd ../ 
+cd ../../5.0/ssd_mobilenet_trt_neuralet/
+
 deepstream-app -c deepstream_app_config_ssd_mobilenet.txt 

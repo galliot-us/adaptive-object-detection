@@ -18,7 +18,7 @@ Then you need to generate and put a `label.txt` file to the :code:`ssd_mobilenet
 After setting all above-mentioned properties, you can use the following commands to run Neuralet docker container for running inference using the DeepStream: ::
 
     docker build -f deepstream-x86.Dockerfile -t "neuralet/object-detection:deepstream-x86" .
-    docker run -it --gpus all  --runtime nvidia -v "$PWD":/repo  neuralet/object-detection:deepstream-x86
+    docker run -it --gpus all  --runtime nvidia -v "$PWD/../..":/repo  neuralet/object-detection:deepstream-x86
 
 Run on Jetson Devices
 ^^^^^^^^^^^^^^^^^^^^^
@@ -31,5 +31,5 @@ You can set your video path in :code:`uri` key of the :code:`source0 section and
 After setting all above-mentioned properties, you can use the following commands to run Neuralet docker container for running inference using the DeepStream: ::
 
     docker build -f deepstream-jetson.Dockerfile -t "neuralet/object-detection:deepstream-jetson-4-4" .
-    docker run --runtime nvidia --privileged -it -v $PWD:/repo neuralet/object-detection:deepstream-jetson-4-4
+    docker run --runtime nvidia --privileged -it -v $PWD/../..:/repo neuralet/object-detection:deepstream-jetson-4-4
  
