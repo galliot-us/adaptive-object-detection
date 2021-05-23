@@ -6,6 +6,7 @@ then
 fi
 
 videoPath="file://$videoPath"
+labelPath="$labelPath"
 
 cd ssd_mobilenet_v2 && mkdir -p 1
 if [ ! -f /repo/deepstream-data/frozen_inference_graph.pb ]; then
@@ -18,10 +19,15 @@ else
     cp /repo/deepstream-data/frozen_inference_graph.pb 1/model.graphdef
 fi
 
-label_file_path="/repo/deepstream/5.1/ssd_mobilenet_v2/labels.txt"
-if [ ! -f $label_file_path ]; then
-        wget https://raw.githubusercontent.com/NVIDIA-AI-IOT/deepstream_triton_model_deploy/master/faster_rcnn_inception_v2/config/labels.txt
+
+if [[ ! -z "${labelPath}" ]]; then
+    bash /repo/generate_label.py $labelPath
+    mv /repo/deepstream-data/labels.txt .
+else
+    wget https://raw.githubusercontent.com/NVIDIA-AI-IOT/deepstream_triton_model_deploy/master/faster_rcnn_inception_v2/config/labels.txt
 fi
+
+labelPath="$PWD/labels.txt"
 
 cd ..
 python3 deepstream_ssd_parser.py --input_video $videoPath --label_path $label_file_path --out_dir out/ --inference_type 1 --config dstest_ssd_nopostprocess.txt

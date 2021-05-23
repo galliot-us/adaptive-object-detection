@@ -1,20 +1,30 @@
 #!/bin/bash
 
-if [ $# -eq 1 ]
+if [ $# -eq 2 ]
 then
     videoPath=$1
+    labelPath=$2
 fi
-
+echo $videoPath $labelPath
 videoPath="file://$videoPath"
+labelPath="$labelPath"
 
-cd ssd_mobilenet_v2 && mkdir -p 1
-cp /repo/deepstream-data/frozen_inference_graph.pb 1/model.graphdef
 
-label_file_path="/repo/deepstream/5.1/ssd_mobilenet_v2/labels.txt"
-if [ ! -f $label_file_path ]; then
-        wget https://raw.githubusercontent.com/NVIDIA-AI-IOT/deepstream_triton_model_deploy/master/faster_rcnn_inception_v2/config/labels.txt
+if [[ ! -z "${labelPath}" ]]; then
+    echo "inside if "+$labelPath
+    python3 /repo/generate_labels_from_pbtxt.py $labelPath
+    mv /repo/deepstream-data/labels.txt .
+else
+    wget https://raw.githubusercontent.com/NVIDIA-AI-IOT/deepstream_triton_model_deploy/master/faster_rcnn_inception_v2/config/labels.txt
 fi
+labelPath="$PWD/labels.txt"
 
-cd ..
-python3 deepstream_ssd_parser.py $videoPath $label_file_path
+export CUDA_VER=10.2
+cd ../libs/nvdsinfer_customparser/ && make
+cd ../nvdsinfer_custom_impl_ssd/ && make
+cd ../../5.1/
+
+
+python3 deepstream_ssd_parser.py --input_video $videoPath --label_path $labelPath --out_dir out/ --inference_type 0 --config config_infer_primary_ssd_mobilenet.txt 
+
 
