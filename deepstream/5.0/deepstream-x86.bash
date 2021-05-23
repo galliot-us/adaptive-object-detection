@@ -7,7 +7,15 @@ then
     labelPath=$2
 fi
 cd ssd_mobilenet_v2_coco && mkdir -p 1
-cp /repo/deepstream-data/frozen_inference_graph.pb 1/model.graphdef
+if [ ! -f /repo/deepstream-data/frozen_inference_graph.pb ]; then
+     echo "Couldn't find frozen_inference graph, downloading from model zoo...!"
+     wget http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz
+     tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz
+     cp ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb 1/model.graphdef
+     rm -rf ssd_mobilenet_v2_coco_2018_03_29.tar.gz ssd_mobilenet_v2_coco_2018_03_29/
+else
+     cp /repo/deepstream-data/frozen_inference_graph.pb 1/model.graphdef
+fi
 
 videoPath="$videoPath"
 labelPath="$labelPath"
