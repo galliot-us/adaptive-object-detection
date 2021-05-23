@@ -241,7 +241,7 @@ def pgie_src_pad_buffer_probe(pad, info, u_data, label_path):
     detection_params = DetectionParam(CLASS_NB, ACCURACY_ALL_CLASS)
     box_size_param = BoxSizeParam(IMAGE_HEIGHT, IMAGE_WIDTH,
                                   MIN_BOX_WIDTH, MIN_BOX_HEIGHT)
-    ms_param = NmsParam(TOP_K, IOU_THRESHOLD)
+    nms_param = NmsParam(TOP_K, IOU_THRESHOLD)
 
     label_names = get_label_names_from_file(label_path)
 

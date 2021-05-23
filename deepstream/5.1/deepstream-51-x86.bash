@@ -28,6 +28,7 @@ else
 fi
 
 labelPath="$PWD/labels.txt"
+echo $labelPath
 
 cd ..
-python3 deepstream_ssd_parser.py --input_video $videoPath --label_path $label_file_path --out_dir out/ --inference_type 1 --config dstest_ssd_nopostprocess.txt
+python3 deepstream_ssd_parser.py --input_video $videoPath --label_path $labelPath --out_dir out/ --inference_type 1 --config dstest_ssd_nopostprocess.txt
