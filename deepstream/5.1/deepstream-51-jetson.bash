@@ -5,13 +5,11 @@ then
     videoPath=$1
     labelPath=$2
 fi
-echo $videoPath $labelPath
 videoPath="file://$videoPath"
 labelPath="$labelPath"
 
 
 if [[ ! -z "${labelPath}" ]]; then
-    echo "inside if "+$labelPath
     python3 /repo/generate_labels_from_pbtxt.py $labelPath
     mv /repo/deepstream-data/labels.txt .
 else
