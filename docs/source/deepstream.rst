@@ -41,7 +41,7 @@ or ::
     
 Run on x86:
 ***********
-First, you need to copy your frozen_inference_graph which can be located in the :code:`train_outputs/frozen_graph/frozen_inference_graph.pb` path to deepstream-data directory. ::
+First, you need to copy your frozen_inference_graph which can be located in the :code:`train_outputs/frozen_graph/frozen_inference_graph.pb` path to deepstream-data directory. You can skip this step if you want to perform inference on the pretrained SSD-Mobilenet-v2-coco from the model zoo. ::
 
     cp train_outputs/frozen_graph/frozen_inference_graph.pb deepstream-data/
 
