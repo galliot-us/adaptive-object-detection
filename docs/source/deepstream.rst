@@ -66,7 +66,7 @@ Then, you need to prepare a label file at the next step. If you have retrained a
 
 Run on Jetson Devices:
 **********************
-First you need to generate TensorRT using :code:`exporter/trt_exporter.py` script. It will generate a :code:`frozen_inference_graph.bin` engine file and you need to copy it inside the deepstream data directory. 
+First you need to generate TensorRT using :code:`exporter/trt_exporter.py` script inside :code:`jetson-nano` docker. It will generate a :code:`frozen_inference_graph.bin` engine file and you need to copy it inside the deepstream data directory. 
 
 Then, you need to prepare a label file at the next step. If you have retrained a model using the adaptive learning module, there is a :code:`label_map.pbtxt` file in the train_outputs directory. If you have trained your model with all of the coco labels, you can skip this step as the label file will be downloaded automatically. 
 
