@@ -7,7 +7,7 @@ infer_config {
       model_name: "ssd_mobilenet_v2_coco"
       version: -1
       model_repo {
-        root: "/repo"
+        root: "/repo/deepstream/5.0"
         log_level: 2
         tf_gpu_memory_fraction: 0.5
         tf_disable_soft_placement: 0
@@ -28,7 +28,7 @@ infer_config {
   }
  
   postprocess {
-    labelfile_path: "/repo/ssd_mobilenet_v2_coco/labels.txt"
+    labelfile_path: "/repo/deepstream/5.0/ssd_mobilenet_v2_coco/labels.txt"
     detection {
       num_detected_classes: 91
       custom_parse_bbox_func: "NvDsInferParseCustomTfSSD"

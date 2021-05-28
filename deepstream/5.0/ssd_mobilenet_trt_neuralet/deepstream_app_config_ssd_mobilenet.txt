@@ -43,8 +43,8 @@ nvbuf-memory-type=0
 enable=1
 #Type - 1=CameraV4L2 2=URI 3=MultiURI
 type=3
-num-sources=4
-uri=file:/repo/softbio_vid.mp4
+num-sources=1
+uri=file:/repo/deepstream-data/input_vid.mp4
 gpu-id=0
 cudadec-memtype=0
 
@@ -58,7 +58,7 @@ gpu-id=0
 nvbuf-memory-type=0
 container=1
 bitrate=4000000
-output-file=/repo/out-trt-softbio.mp4
+output-file=/repo/deepstream-data/output_vid.mp4
 codec=1
 
 [osd]
@@ -106,5 +106,5 @@ nvbuf-memory-type=0
 config-file=config_infer_primary_ssd_mobilenet.txt
 
 [property]
-custom-lib-path=/repo/ssd_mobilenet_trt_neuralet/nvdsinfer_custom_impl_ssd/libnvdsinfer_custom_impl_ssd.so
+custom-lib-path=/repo/deepstream/libs/nvdsinfer_custom_impl_ssd/libnvdsinfer_custom_impl_ssd.so
 

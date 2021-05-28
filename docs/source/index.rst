@@ -15,6 +15,7 @@ This is the Neuralet edge vision module. With this module, you can run object de
     export_models
     inference
     adaptive_learning
+    deepstream
 
 
 
