@@ -9,6 +9,7 @@ import numpy as np
 import tensorrt as trt
 import pycuda.driver as cuda
 import time
+from pathlib import Path
 from utils.fps_calculator import convert_infr_time_to_fps
 
 
@@ -22,17 +23,27 @@ class JetsonDetector(BaseDetector):
         ctypes.CDLL("/opt/libflattenconcat.so")
         trt.init_libnvinfer_plugins(self.trt_logger, '')
 
-    def _load_engine(self, model_path):
+    def _load_engine(self, model_path, classes):
+        parent_dir = str(Path(__file__).parent.absolute())
+        base_dir = parent_dir + "/data/"
+        detector_class_count = len(classes)
         if not model_path:
             logging.info("you didn't specify the model file so the COCO pretrained model will be used")
             base_url =  "https://github.com/Tony607/jetson_nano_trt_tf_ssd/raw/master/packages/jetpack4.3/"
-            base_dir = "detectors/data/"
-            model_file = "TRT_ssd_mobilenet_v2_coco.bin"
+            model_file = "frozen_inference_graph.bin"
             model_path = os.path.join(base_dir, model_file)
             if not os.path.isfile(model_path):
                 logging.info('model does not exist under: {}, downloading from {}'.format(str(model_path), base_url + model_file))
                 os.makedirs(base_dir, exist_ok=True)
-                os.system("bash /repo/generate_tensorrt.bash")
+                os.system("bash "+ parent_dir + "/../generate_tensorrt.bash")
+        import pathlib
+        if ( pathlib.Path(model_path).suffix == ".pb" ):
+            logging.info('model is a Tensorflow protobuf... Converting...')
+            os.makedirs(base_dir, exist_ok=True)
+            os.system("bash "+ parent_dir + "/../generate_tensorrt.bash " + str(model_path) + " " + str(detector_class_count))
+            model_file = "frozen_inference_graph.bin"
+            model_path = os.path.join(base_dir, model_file)
+
         """ Load engine file as a trt Runtime. """
         with open(model_path, 'rb') as f, trt.Runtime(self.trt_logger) as runtime:
             return runtime.deserialize_cuda_engine(f.read())
@@ -90,8 +101,8 @@ class JetsonDetector(BaseDetector):
         self.host_outputs = []
         self.cuda_outputs = []
         self.bindings = []
-        self._init_cuda_stuff(model_path)
         self.classes = list(label_map.keys())
+        self._init_cuda_stuff(model_path)
         self.label_map = label_map
 
 
@@ -99,7 +110,7 @@ class JetsonDetector(BaseDetector):
         cuda.init()
         self.device = cuda.Device(0)  # enter your Gpu id here
         self.cuda_context = self.device.make_context()
-        self.model = self._load_engine(model_path) 
+        self.model = self._load_engine(model_path, self.classes) 
         self._allocate_buffers()
         self.engine_context = self.model.create_execution_context()
         self.stream = cuda.Stream()  # create a CUDA stream to run inference
