@@ -63,16 +63,15 @@ def export_trt(pb_file, output_dir, num_classes=90, neuralet_adaptive_model=1):
         text=True,
         debug_mode=False)
     input_dims = (3, 300, 300)
-    with trt.Builder(TRT_LOGGER) as builder, builder.create_network() as network, trt.UffParser() as parser:
-        config = builder.create_builder_config()
-        config.max_workspace_size = 1 << 28
+    with trt.Builder(TRT_LOGGER) as builder, builder.create_network() as network, builder.create_builder_config() as builder_config, trt.UffParser() as parser:
+        builder_config.max_workspace_size = 1 << 28
         builder.max_batch_size = 1
-        #builder.fp16_mode = True TODO: Deprecated in TRT8 is it done automatically?
+        builder_config.set_flag(trt.BuilderFlag.FP16)
 
         parser.register_input('Input', input_dims)
         parser.register_output('MarkOutput_0')
         parser.parse(uff_path, network)
-        engine = builder.build_engine(network, config)
+        engine = builder.build_engine(network, builder_config)
         
         buf = engine.serialize()
         engine_path = os.path.join(output_dir, model_file_name + ".bin")
