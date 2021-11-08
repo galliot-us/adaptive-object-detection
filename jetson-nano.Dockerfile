@@ -3,9 +3,7 @@
 # 1) build: docker build -f Dockerfile -t "neuralet/jetson-nano:tf-ssd-to-trt" .
 # 2) run: docker run -it --runtime nvidia --privileged --network host -v /PATH_TO_DOCKERFILE_DIRECTORY/:/repo neuralet/jetson-nano:tf-ssd-to-trt
 
-#FROM nvcr.io/nvidia/l4t-base:r32.4.4
-
-FROM nvcr.io/nvidia/l4t-tensorflow:r32.4.4-tf1.15-py3
+FROM nvcr.io/nvidia/l4t-tensorflow:r32.6.1-tf1.15-py3
 ENV TZ=US/Pacific
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -36,4 +34,5 @@ RUN pip3 install wget pillow
 COPY ./exporters/libflattenconcat.so.6 /opt/libflattenconcat.so 
 RUN apt update && apt install -y libtcmalloc-minimal4
 WORKDIR /repo
+ENV relative_path=/repo
 ENV LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libtcmalloc_minimal.so.4"
